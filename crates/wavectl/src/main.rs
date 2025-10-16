@@ -74,11 +74,7 @@ fn try_main() -> Result<()> {
         Commands::Compile { src, out, strict } => cmd_compile(src, out, strict),
         Commands::Run { ir, r#in, out } => cmd_run(ir, r#in, out),
         Commands::Report { ir, emit, cert } => cmd_report(ir, emit, cert),
-        Commands::Acceptance {
-            plan,
-            outdir,
-            strict,
-        } => cmd_acceptance(plan, outdir, strict),
+        Commands::Acceptance { plan, outdir, strict } => cmd_acceptance(plan, outdir, strict),
         Commands::Pack { dir, out } => cmd_pack(dir, out),
     }
 }
@@ -137,9 +133,7 @@ enum Expect {
     PASS,
     FAIL,
 }
-fn default_expect() -> Expect {
-    Expect::PASS
-}
+fn default_expect() -> Expect { Expect::PASS }
 
 #[derive(Debug, Deserialize)]
 struct RunSpec {
@@ -176,10 +170,7 @@ fn cmd_acceptance(plan: PathBuf, outdir: PathBuf, strict: bool) -> Result<()> {
         for m in &missing {
             eprintln!("  - {m}");
         }
-        anyhow::bail!(
-            "acceptance plan invalid: {} missing input files",
-            missing.len()
-        );
+        anyhow::bail!("acceptance plan invalid: {} missing input files", missing.len());
     }
 
     let mut rows: Vec<String> = Vec::new();
@@ -199,10 +190,7 @@ fn cmd_acceptance(plan: PathBuf, outdir: PathBuf, strict: bool) -> Result<()> {
                     "| {} | {:?} | ❌ | cannot read: {} |",
                     t.name, t.expect, e
                 ));
-                mismatches.push(format!(
-                    "{}: expected {:?}, got IO error ({})",
-                    t.name, t.expect, e
-                ));
+                mismatches.push(format!("{}: expected {:?}, got IO error ({})", t.name, t.expect, e));
                 continue;
             }
         };
@@ -222,13 +210,8 @@ fn cmd_acceptance(plan: PathBuf, outdir: PathBuf, strict: bool) -> Result<()> {
                         Err(e) => {
                             note = format!("run: cannot read input: {}", e);
                             mismatches.push(format!("{}: run input error ({})", t.name, e));
-                            // Сохраним причину и оформим как FAIL
                             rows.push(format!("| {} | {:?} | ❌ | {} |", t.name, t.expect, note));
-                            if t.expect == Expect::PASS {
-                                failed += 1;
-                            } else {
-                                passed += 1;
-                            }
+                            if t.expect == Expect::PASS { failed += 1; } else { passed += 1; }
                             continue;
                         }
                     };
@@ -236,24 +219,13 @@ fn cmd_acceptance(plan: PathBuf, outdir: PathBuf, strict: bool) -> Result<()> {
                     let out_wf = match waverunner::run(&ir, &in_wf) {
                         Ok(w) => w,
                         Err(e) => {
-                            // Если упали на run, это FAIL относительно PASS-ожидания
                             if t.expect == Expect::PASS {
                                 failed += 1;
-                                mismatches.push(format!(
-                                    "{}: expected PASS, got RUN FAIL ({})",
-                                    t.name, e
-                                ));
-                                rows.push(format!(
-                                    "| {} | {:?} | ❌ | run failed: {} |",
-                                    t.name, t.expect, e
-                                ));
+                                mismatches.push(format!("{}: expected PASS, got RUN FAIL ({})", t.name, e));
+                                rows.push(format!("| {} | {:?} | ❌ | run failed: {} |", t.name, t.expect, e));
                             } else {
-                                // Ожидали FAIL — зачтём
                                 passed += 1;
-                                rows.push(format!(
-                                    "| {} | {:?} | ✅ | run failed as expected |",
-                                    t.name, t.expect
-                                ));
+                                rows.push(format!("| {} | {:?} | ✅ | run failed as expected |", t.name, t.expect));
                             }
                             continue;
                         }
@@ -266,27 +238,17 @@ fn cmd_acceptance(plan: PathBuf, outdir: PathBuf, strict: bool) -> Result<()> {
                         if let (Some(in_rate), Some(rate_div)) = (in_wf.header.rate, exp.rate_div) {
                             let want = ((in_rate as f64) / rate_div).round() as u32;
                             let got = out_wf.header.rate.unwrap_or(0);
-                            if got != want {
-                                test_ok = false;
-                                checks.push(format!("rate got={}, want={}", got, want));
-                            }
+                            if got != want { test_ok = false; checks.push(format!("rate got={}, want={}", got, want)); }
                         }
-                        // len (по mono)
+                        // len (по mono) — ИСПОЛЬЗУЕМ CEIL, как в рантайме (берём каждый λ-й с нуля)
                         let in_len = mono_len(&in_wf);
                         let out_len = mono_len(&out_wf);
                         if let Some(len_div) = exp.len_div {
-                            let want = ((in_len as f64) / len_div).round() as usize;
-                            if out_len != want {
-                                test_ok = false;
-                                checks.push(format!("len got={}, want={}", out_len, want));
-                            }
+                            let want = ((in_len as f64) / len_div).ceil() as usize;
+                            if out_len != want { test_ok = false; checks.push(format!("len got={}, want={}", out_len, want)); }
                         }
                         if checks.is_empty() {
-                            note = format!(
-                                "run ok: rate={}, len={}",
-                                out_wf.header.rate.unwrap_or(0),
-                                out_len
-                            );
+                            note = format!("run ok: rate={}, len={}", out_wf.header.rate.unwrap_or(0), out_len);
                         } else {
                             note = format!("run mismatch: {}", checks.join(", "));
                         }
@@ -300,15 +262,7 @@ fn cmd_acceptance(plan: PathBuf, outdir: PathBuf, strict: bool) -> Result<()> {
 
                 // Сверим с ожидаемым итогом теста
                 let got = if test_ok { Expect::PASS } else { Expect::FAIL };
-                if got == t.expect {
-                    passed += 1;
-                } else {
-                    failed += 1;
-                    mismatches.push(format!(
-                        "{}: expected {:?}, got {:?}",
-                        t.name, t.expect, got
-                    ));
-                }
+                if got == t.expect { passed += 1; } else { failed += 1; mismatches.push(format!("{}: expected {:?}, got {:?}", t.name, t.expect, got)); }
 
                 // Отчёт по IR
                 let rep = wavereport::from_ir(&ir);
@@ -321,11 +275,7 @@ fn cmd_acceptance(plan: PathBuf, outdir: PathBuf, strict: bool) -> Result<()> {
                     t.name,
                     t.expect,
                     if got == t.expect { "✅" } else { "❌" },
-                    if note.is_empty() {
-                        String::from("")
-                    } else {
-                        format!("{}; ", note)
-                    },
+                    if note.is_empty() { String::from("") } else { format!("{}; ", note) },
                     rep.certificate.i1,
                 ));
             }
@@ -336,10 +286,7 @@ fn cmd_acceptance(plan: PathBuf, outdir: PathBuf, strict: bool) -> Result<()> {
                     passed += 1;
                 } else {
                     failed += 1;
-                    mismatches.push(format!(
-                        "{}: expected {:?}, got FAIL ({})",
-                        t.name, t.expect, err
-                    ));
+                    mismatches.push(format!("{}: expected {:?}, got FAIL ({})", t.name, t.expect, err));
                 }
                 let mut p = outdir.clone();
                 p.push(format!("{}.err.txt", t.name));
@@ -372,7 +319,6 @@ fn cmd_acceptance(plan: PathBuf, outdir: PathBuf, strict: bool) -> Result<()> {
     fs::write(&idx, md).with_context(|| format!("failed to write {}", idx.display()))?;
     println!("Acceptance → {}", idx.display());
 
-    // Жёсткий выход при несоответствиях
     if failed > 0 {
         eprintln!("Acceptance mismatches:");
         for m in &mismatches {

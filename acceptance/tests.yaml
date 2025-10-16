@@ -10,7 +10,6 @@
   src: examples/hello_down.wml
   expect: PASS
 
-# дополнительные кейсы (опционально — добавь, если хочешь расширить проверку)
 - name: R7_fail_wrong_case_edge
   src: acceptance/bad_r7_case.wml
   expect: FAIL
@@ -27,3 +26,18 @@
     expect:
       rate_div: 2
       len_div: 2
+
+- name: RUN_down_by_3
+  src: examples/hello_down3.wml
+  expect: PASS
+  run:
+    input: examples/dummy.wfm.json
+    expect:
+      rate_div: 3
+      len_div: 3
+
+- name: RUN_down_bad_lambda
+  src: acceptance/bad_lambda_1.wml
+  expect: FAIL
+  run:
+    input: examples/dummy.wfm.json
