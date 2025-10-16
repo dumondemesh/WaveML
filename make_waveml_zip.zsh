@@ -9,6 +9,7 @@ INCLUDE=(
   "crates"
   "examples"
   "acceptance"
+  "docs"
   ".github"
   "Cargo.toml"
   "rust-toolchain.toml"

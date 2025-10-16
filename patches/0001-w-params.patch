@@ -1,0 +1,11 @@
+@@ "node": { "op": "W", ...
+-   "params": { "bank": "hann-default" }
++   "params": {
++     "bank": "hann-default",
++     "n_fft": { "type": "integer", "minimum": 16, "default": 1024 },
++     "hop":   { "type": "integer", "minimum": 1,  "default": 256 },
++     "window":{ "type": "string",  "enum": ["hann","hamming","blackman"], "default": "hann" },
++     "center":{ "type": "boolean", "default": true },
++     "pad_mode": { "type": "string", "enum": ["reflect"], "default": "reflect" }
++   }
+
