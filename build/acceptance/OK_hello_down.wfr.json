@@ -1,0 +1,26 @@
+{
+  "report_version": "1.0",
+  "generated_at": "2025-10-16T00:33:35.201603Z",
+  "certificate": {
+    "I1": true,
+    "I2": true,
+    "I3": true,
+    "I4": true,
+    "I5": true
+  },
+  "ops": {
+    "aa_missing": 0,
+    "counts": {
+      "D": 1,
+      "T": 1,
+      "W": 1
+    },
+    "edges_seen": [
+      "reflect"
+    ],
+    "lambdas": [
+      2.0
+    ]
+  },
+  "notes": "auto-generated from IR (proto)"
+}

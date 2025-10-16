@@ -1,0 +1,9 @@
+[package]
+name = "waverunner"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+wmlb = { path = "../wmlb" }
+waveform = { path = "../waveform" }

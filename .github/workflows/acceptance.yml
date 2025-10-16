@@ -1,0 +1,43 @@
+name: WaveML Acceptance
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build
+        run: cargo build --workspace --all-targets
+
+      - name: Unit tests
+        run: cargo test --workspace
+
+      - name: Run acceptance
+        run: |
+          cargo run -p wavectl -- acceptance \
+            --plan acceptance/tests.yaml \
+            --outdir build/acceptance \
+            --strict
+          cat build/acceptance/index.md
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: acceptance-artifacts
+          path: |
+            build/acceptance/**
+            build/reports/**
+            **/*.wfr.json
+          if-no-files-found: warn

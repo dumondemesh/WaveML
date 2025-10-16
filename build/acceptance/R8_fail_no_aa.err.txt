@@ -1,0 +1,1 @@
+R8 violation (строка 2): Downsample без anti-alias. Укажите `aa="sinc"` (или другой фильтр). Аргументы: `λ=2`

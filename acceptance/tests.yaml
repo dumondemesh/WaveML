@@ -1,0 +1,11 @@
+- name: R7_fail_zero_pad
+  src: acceptance/bad_r7.wml
+  expect: FAIL
+
+- name: R8_fail_no_aa
+  src: acceptance/bad_r8.wml
+  expect: FAIL
+
+- name: OK_hello_down
+  src: examples/hello_down.wml
+  expect: PASS
