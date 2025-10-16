@@ -1,12 +1,12 @@
 {
-  "report_version": "1.0",
-  "generated_at": "2025-10-16T12:40:39.354687Z",
   "certificate": {
-    "I1": true,
-    "I2": true,
-    "I3": true,
-    "I4": true,
-    "I5": true
+    "i1": true,
+    "i2": true,
+    "i3": true,
+    "i4": true,
+    "i5": true,
+    "r7_ok": true,
+    "r8_ok": true
   },
   "ops": {
     "aa_missing": 0,
@@ -22,5 +22,7 @@
       2.0
     ]
   },
-  "notes": "auto-generated from IR (proto)"
+  "source": {
+    "git_sha": null
+  }
 }

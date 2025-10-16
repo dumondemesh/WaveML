@@ -41,3 +41,12 @@
   expect: FAIL
   run:
     input: examples/dummy.wfm.json
+
+- name: RUN_wt_roundtrip
+  src: examples/hello_wt.wml
+  expect: PASS
+  run:
+    input: examples/dummy.wfm.json
+    expect:
+      len_eq: true
+      mse_max: 1e-6

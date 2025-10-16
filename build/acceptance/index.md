@@ -1,6 +1,6 @@
 # Acceptance — summary
 
-**Всего:** 8  |  **Пройдено:** 8  |  **Провалено:** 0
+**Всего:** 9  |  **Пройдено:** 9  |  **Провалено:** 0
 
 | Тест | Expect | Result | Заметка |
 |------|--------|--------|---------|
@@ -12,3 +12,4 @@
 | RUN_down_by_2 | PASS | ✅ | run ok: rate=8000, len=2;  I1=true |
 | RUN_down_by_3 | PASS | ✅ | run ok: rate=5333, len=2;  I1=true |
 | RUN_down_bad_lambda | FAIL | ✅ | run failed as expected |
+| RUN_wt_roundtrip | PASS | ✅ | mse=3.119645e-26;  I1=true |
