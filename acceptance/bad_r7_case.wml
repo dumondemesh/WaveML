@@ -1,0 +1,6 @@
+input x: WaveForm(domain="audio")
+x = W(
+  bank="stft",
+  edge="REFLECT"   // неверный регистр — должно упасть по R7
+)(x)
+y = T()(x)

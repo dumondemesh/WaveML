@@ -1,23 +1,45 @@
 name: WaveML Acceptance
+
 on:
-  push: { branches: ["master"] }
-  pull_request: { branches: ["master"] }
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
 jobs:
   acceptance:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - run: cargo build --workspace --all-targets
-      - run: cargo test --workspace
-      - run: |
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build
+        run: cargo build --workspace --all-targets
+
+      - name: Format check
+        run: cargo fmt --all -- --check
+
+      - name: Clippy (deny warnings)
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Unit tests
+        run: cargo test --workspace
+
+      - name: Run acceptance
+        run: |
           cargo run -p wavectl -- acceptance \
             --plan acceptance/tests.yaml \
             --outdir build/acceptance \
             --strict
           cat build/acceptance/index.md
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: acceptance-artifacts
           path: |

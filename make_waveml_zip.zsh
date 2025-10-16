@@ -12,6 +12,7 @@ INCLUDE=(
   ".github"
   "Cargo.toml"
   "rust-toolchain.toml"
+  "README.md"
 )
 
 # Папка, где лежит скрипт

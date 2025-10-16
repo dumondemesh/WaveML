@@ -1,1 +1,1 @@
-R7 violation (строка 2): edge="zero" запрещён. Используйте edge="reflect" или edge="Toeplitz".
+R7 violation: edge="zero" запрещён. Используйте edge="reflect" или edge="Toeplitz".

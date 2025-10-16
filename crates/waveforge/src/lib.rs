@@ -82,8 +82,7 @@ fn find_sections(code: &str, op: &str) -> Vec<String> {
 
     while i < chars.len() {
         // ищем начало OP(
-        if i + pat.len() <= chars.len()
-            && chars[i..i + pat.len()].iter().collect::<String>() == pat
+        if i + pat.len() <= chars.len() && chars[i..i + pat.len()].iter().collect::<String>() == pat
         {
             let mut depth = 1i32;
             let mut j = i + pat.len(); // позиция после '('
