@@ -1,0 +1,26 @@
+graph:
+  - op: W
+    id: X
+    input: x
+    params: { n_fft: 1024, hop: 256, window: hann, center: true, pad_mode: reflect }
+
+  - op: A
+    id: Xa
+    input: X
+    params: { kind: "mag", q: 1.0 }
+
+  - op: Align
+    id: Xal
+    input: Xa
+    params: { mode: xcorr_soft, radius: 8 }
+
+  - op: T
+    id: y
+    input: Xal
+    params: {}
+
+report:
+  - metric: coh_lock
+    of: [Xa, Xal]
+  - op_params: [Align]
+  - save: align_after_a.wfr.json

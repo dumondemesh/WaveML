@@ -1,0 +1,12 @@
+{
+  "graph": [
+    { "op": "T", "id": "x", "params": { "kind": "two_tones", "f": [220, 224], "sr": 48000, "length": 65536 } },
+    { "op": "W", "id": "X", "input": "x",
+      "params": { "n_fft": 1024, "hop": 256, "window": "hann", "center": true, "pad_mode": "reflect" } },
+    { "op": "A", "id": "Xa", "input": "X", "params": { "kind": "mag", "q": 1.0 } },
+    { "op": "Align", "id": "Xal", "input": "Xa", "params": { "mode": "xcorr_soft", "radius": 8 } }
+  ],
+  "report": [
+    { "save": "align_after_a.wfr.json" }
+  ]
+}

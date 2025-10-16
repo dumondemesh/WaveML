@@ -20,9 +20,9 @@ pub struct WParams {
 impl Default for WParams {
     fn default() -> Self {
         Self {
-            bank: "hann-default".into(),
+            bank: "hann-default".to_string(),
             n_fft: 1024,
-            hop: 256,
+            hop: 512,
             window: WindowKind::Hann,
             center: true,
             pad_mode: PadMode::Reflect,
@@ -30,33 +30,28 @@ impl Default for WParams {
     }
 }
 
-pub fn exec_w(input: &[f64], p: &WParams) -> Spectrogram {
-    // R7 guard: only reflect padding; no zero-padding allowed.
-    let x = if p.center {
-        let pad = p.n_fft / 2;
-        reflect_pad(input, pad)
-    } else {
-        input.to_vec()
-    };
-    stft_rustfft(&x, p)
+pub fn exec_w(x: &[f64], p: &WParams) -> Spectrogram {
+    // R7: zero-pad forbidden; only reflect is allowed at edges
+    match p.pad_mode {
+        PadMode::Reflect => {}
+    }
+    stft_rustfft(x, p)
 }
 
-// --- helpers ---
-
-fn reflect_pad(x: &[f64], m: usize) -> Vec<f64> {
-    if m == 0 || x.is_empty() { return x.to_vec(); }
-    let mut y = Vec::with_capacity(x.len() + 2 * m);
-    // left reflect
-    for i in (0..m).rev() {
-        y.push(x[i.min(x.len() - 1)]);
+// (доп. хелпер — если нужно локально)
+pub fn make_window(n: usize, w: WindowKind) -> Vec<f64> {
+    match w {
+        WindowKind::Hann => (0..n).map(|i| {
+            let a = std::f64::consts::TAU * (i as f64) / (n as f64);
+            0.5 - 0.5 * a.cos()
+        }).collect(),
+        WindowKind::Hamming => (0..n).map(|i| {
+            let a = std::f64::consts::TAU * (i as f64) / (n as f64);
+            0.54 - 0.46 * a.cos()
+        }).collect(),
+        WindowKind::Blackman => (0..n).map(|i| {
+            let a = std::f64::consts::TAU * (i as f64) / (n as f64);
+            0.42 - 0.5 * a.cos() + 0.08 * (2.0 * a).cos()
+        }).collect(),
     }
-    // center
-    y.extend_from_slice(x);
-    // right reflect
-    let n = x.len();
-    for i in 0..m {
-        let idx = n - 1 - i.min(n - 1);
-        y.push(x[idx]);
-    }
-    y
 }

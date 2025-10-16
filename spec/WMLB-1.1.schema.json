@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WaveMLB Schema v1.1",
+  "description": "MINOR update: W.params gains n_fft/hop/window/center/pad_mode; new op Align.",
+  "type": "object",
+  "properties": {
+    "graph": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["op", "id"],
+        "properties": {
+          "id": { "type": "string" },
+          "op": { "type": "string", "enum": ["T", "T_inv", "W", "A", "C", "Align"] },
+          "input": { "type": ["string", "array"], "items": { "type": "string" } },
+          "params": { "type": "object" }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "op": { "const": "W" } } },
+            "then": {
+              "properties": {
+                "params": {
+                  "type": "object",
+                  "properties": {
+                    "bank":   { "type": "string", "default": "hann-default" },
+                    "n_fft":  { "type": "integer", "minimum": 16, "default": 1024 },
+                    "hop":    { "type": "integer", "minimum": 1,  "default": 256 },
+                    "window": { "type": "string",  "enum": ["hann","hamming","blackman"], "default": "hann" },
+                    "center": { "type": "boolean", "default": true },
+                    "pad_mode": { "type": "string", "enum": ["reflect"], "default": "reflect" }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          {
+            "if": { "properties": { "op": { "const": "Align" } } },
+            "then": {
+              "properties": {
+                "params": {
+                  "type": "object",
+                  "properties": {
+                    "mode":   { "type":"string","enum":["xcorr_soft","xcorr_hard"],"default":"xcorr_soft" },
+                    "radius": { "type":"integer","minimum":0,"default":8 }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "report": { "type": "array" }
+  },
+  "required": ["graph"]
+}

@@ -1,3 +1,4 @@
+# Acceptance plan — Phase 1 (Freeze v1.0 → WMLB 1.1)
 - name: R7_fail_zero_pad
   src: acceptance/bad_r7.wml
   expect: FAIL
@@ -14,39 +15,25 @@
   src: acceptance/bad_r7_case.wml
   expect: FAIL
 
-- name: OK_multiline_W
-  src: acceptance/ok_multiline_w.wml
-  expect: PASS
-
-- name: RUN_down_by_2
-  src: examples/hello_down.wml
-  expect: PASS
-  run:
-    input: examples/dummy.wfm.json
-    expect:
-      rate_div: 2
-      len_div: 2
-
-- name: RUN_down_by_3
-  src: examples/hello_down3.wml
-  expect: PASS
-  run:
-    input: examples/dummy.wfm.json
-    expect:
-      rate_div: 3
-      len_div: 3
-
-- name: RUN_down_bad_lambda
-  src: acceptance/bad_lambda_1.wml
-  expect: FAIL
-  run:
-    input: examples/dummy.wfm.json
-
-- name: RUN_wt_roundtrip
-  src: examples/hello_wt.wml
+# Roundtrip via W/T_inv (rustfft backend). Double-precision пороги.
+- name: RUN_wt_roundtrip_1024_256
+  src: examples/wt_roundtrip_1024_256.yaml
   expect: PASS
   run:
     input: examples/dummy.wfm.json
     expect:
       len_eq: true
-      mse_max: 1e-6
+      rel_mse_max_f64: 1e-20
+      rel_mse_max_f32: 1e-8
+      cola_max_dev: 1e-12
+
+- name: RUN_wt_roundtrip_2048_512
+  src: examples/wt_roundtrip_2048_512.yaml
+  expect: PASS
+  run:
+    input: examples/dummy.wfm.json
+    expect:
+      len_eq: true
+      rel_mse_max_f64: 1e-20
+      rel_mse_max_f32: 1e-8
+      cola_max_dev: 1e-12

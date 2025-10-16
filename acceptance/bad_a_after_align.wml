@@ -1,0 +1,4 @@
+input x: WaveForm(domain="audio")
+Xal = Align(mode="xcorr_soft", radius=8)( W(edge="reflect", n_fft=1024, hop=256)(x) )
+Xa  = A(kind="mag", q=1.0)(Xal)  # запрещено: A после Align
+y   = T()(Xa)

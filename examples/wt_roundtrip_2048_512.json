@@ -1,0 +1,13 @@
+{
+  "graph": [
+    { "op": "T", "id": "x", "params": { "kind": "sine_sweep", "length": 131072, "sr": 48000 } },
+    { "op": "W", "id": "X", "input": "x",
+      "params": { "bank": "hann-default", "n_fft": 2048, "hop": 512, "window": "hann", "center": true, "pad_mode": "reflect" } },
+    { "op": "T_inv", "id": "x_hat", "input": "X", "params": { } }
+  ],
+  "report": [
+    { "metric": "rmse_time", "of": ["x", "x_hat"] },
+    { "op_params": ["W", "T_inv"] },
+    { "save": "wt_roundtrip_2048_512.wfr.json" }
+  ]
+}

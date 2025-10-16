@@ -19,3 +19,7 @@
 - name: OK_align_after_a
   src: acceptance/ok_align_after_a.wml
   expect: PASS
+
+- name: FAIL_a_after_align
+  src: acceptance/bad_a_after_align.wml
+  expect: FAIL

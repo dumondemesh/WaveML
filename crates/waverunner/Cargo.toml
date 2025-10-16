@@ -7,4 +7,8 @@ edition = "2021"
 anyhow = { workspace = true }
 wmlb = { path = "../wmlb" }
 waveform = { path = "../waveform" }
+serde = { workspace = true }
 serde_json = "1.0.145"
+# FFT backend (pinned minor for Freeze)
+rustfft = "=6.4.0"
+num-complex = "0.4"

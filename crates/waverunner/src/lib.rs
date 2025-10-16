@@ -1,3 +1,4 @@
+pub mod ops;
 use anyhow::*;
 use serde_json::Value;
 use wmlb::Graph;

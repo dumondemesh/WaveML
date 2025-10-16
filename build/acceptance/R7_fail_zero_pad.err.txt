@@ -1,1 +1,1 @@
-R7 violation: edge="zero" запрещён. Используйте edge="reflect" или edge="Toeplitz".
+Safety:R7-zero-pad

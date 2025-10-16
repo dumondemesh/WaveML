@@ -10,10 +10,13 @@ INCLUDE=(
   "examples"
   "acceptance"
   "docs"
+  "spec"
   ".github"
   "Cargo.toml"
   "rust-toolchain.toml"
   "README.md"
+  "CHANGELOG.md"
+  "versions.md"
 )
 
 # Папка, где лежит скрипт

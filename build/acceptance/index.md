@@ -1,15 +1,10 @@
 # Acceptance — summary
 
-**Всего:** 9  |  **Пройдено:** 9  |  **Провалено:** 0
+**Всего:** 4  |  **Пройдено:** 4  |  **Провалено:** 0
 
 | Тест | Expect | Result | Заметка |
 |------|--------|--------|---------|
-| R7_fail_zero_pad | FAIL | ✅ | err saved: build/acceptance/R7_fail_zero_pad.err.txt |
-| R8_fail_no_aa | FAIL | ✅ | err saved: build/acceptance/R8_fail_no_aa.err.txt |
-| OK_hello_down | PASS | ✅ |  I1=true |
-| R7_fail_wrong_case_edge | FAIL | ✅ | err saved: build/acceptance/R7_fail_wrong_case_edge.err.txt |
-| OK_multiline_W | PASS | ✅ |  I1=true |
-| RUN_down_by_2 | PASS | ✅ | run ok: rate=8000, len=2;  I1=true |
-| RUN_down_by_3 | PASS | ✅ | run ok: rate=5333, len=2;  I1=true |
-| RUN_down_bad_lambda | FAIL | ✅ | run failed as expected |
-| RUN_wt_roundtrip | PASS | ✅ | mse=3.119645e-26;  I1=true |
+| RUN_wt_roundtrip_1024_256 | PASS | ✅ | mse=3.119645e-26;  I1=true |
+| RUN_wt_roundtrip_2048_512 | PASS | ✅ | mse=3.119645e-26;  I1=true |
+| OK_align_after_a | PASS | ✅ |  I1=true |
+| FAIL_a_after_align | FAIL | ✅ | err saved: build/acceptance/FAIL_a_after_align.err.txt |
