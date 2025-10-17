@@ -15,6 +15,7 @@ INCLUDE=(
   "docs"
   "spec"
   "tools"
+  "schemas"
   "Makefile"
   ".github"
   "Cargo.toml"

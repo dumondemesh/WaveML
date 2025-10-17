@@ -1,6 +1,6 @@
 .PHONY: all build clippy cola validate acceptance ci
 
-all: build clippy cola validate
+all: build clippy cola validate gates forge-gate nf-diff
 
 build:
 	cargo build
@@ -18,3 +18,12 @@ acceptance: ci
 
 ci:
 	bash scripts/ci/run_all_gates.sh
+
+gates:       ## run all project gates
+	@bash scripts/ci/run_all_gates.sh
+
+forge-gate:  ## run only forge gate
+	@bash ci/forge_gate.sh
+
+nf-diff:     ## run only NF-DIFF gate
+	@bash scripts/ci/nf_diff_gate.sh

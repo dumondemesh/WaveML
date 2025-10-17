@@ -1,15 +1,34 @@
-# WFR Migration Toolkit (legacy -> 1.0.0)
+# WaveML — STRICT-NF Canon (Phase P1/I1)
 
-Этот пакет помогает быстро **мигрировать старые отчёты WFR** (без `schema_version`) к единому формату **WFR v1.0.0**, не трогая пока Rust-код.
+This drop introduces a **stable API** in `waveforge`, a **strict stdout contract** in `wavectl forge`,
+support for **stdin/glob inputs**, a **Graph JSON Schema**, and **property-based tests**.
 
-## Что внутри
-- `tools/migrate_wfr.py` — скрипт миграции (build → build_migrated).
-- `tools/overview_v3.py` — расширенный обзор (подсветка пустых полей cert/metrics/w_perf).
-- `docs/USAGE.md` — как запускать.
+## Quickstart
+```bash
+# Build
+cargo build
 
-## Мини-цели
-1. Привести все `.wfr.json` к одному формату (v1.0.0).
-2. Обеспечить наличие ключей: `cert`, `w_params`, `w_perf`, `metrics`.
-3. Не ломать текущие пайплайны — миграция идёт **в отдельную папку** (`build_migrated/`).
+# Canonical NF-ID (hex only on stdout)
+target/debug/wavectl forge --input examples/graph/forge_eq_A.json --print-id
 
-После миграции можно постепенно заменить генераторы отчётов в Rust на новый формат.
+# Canonical NF JSON
+target/debug/wavectl forge --input examples/graph/forge_eq_A.json --print-nf
+
+# Check if already canonical (exit 0 if yes)
+target/debug/wavectl forge --input examples/graph/forge_eq_A.json --check
+
+# Stdin / glob
+cat examples/graph/forge_eq_A.json | target/debug/wavectl forge -i - --print-id
+target/debug/wavectl forge -i "examples/graph/*.json" --print-id
+
+# Run CI gates for Phase P1/I1
+bash scripts/ci/run_all_gates.sh
+```
+
+## Stable API
+```rust
+use waveforge::{canonicalize_graph, nf_id_hex};
+```
+
+## Schema
+- `schemas/graph.schema.json` (schema_semver: 1.0.0)

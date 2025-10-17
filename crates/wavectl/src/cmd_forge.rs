@@ -1,40 +1,50 @@
-
-use anyhow::{Context, Result};
+use anyhow::{bail, Result};
 use serde_json::Value;
-use std::fs::File;
-use std::io::Write;
+use std::fs;
 use std::path::Path;
 
-/// Forge STRICT-NF and NF-ID.
-/// Keeps CLI behavior:
-///   --input <FILE>
-///   --print-id
-///   --print-nf
-///   --out <FILE> (optional)
-pub fn run(input: &Path, print_id: bool, print_nf: bool, out: Option<&Path>) -> Result<()> {
-    let file = File::open(input).with_context(|| format!("open {:?}", input))?;
-    let manifest: Value = serde_json::from_reader(file).context("parse manifest json")?;
+// Берём реальные API из waveforge
+use waveforge::strict_nf::{strict_nf, strict_nf_hex};
 
-    // Delegate to waveforge canonicalizer that includes center/pad_mode
-    let nf = waveforge::strict_nf(&manifest).context("strict_nf")?;
-    let nf_hex = waveforge::strict_nf_hex(&manifest).context("strict_nf_hex")?;
+fn read_json(path: &Path) -> Result<Value> {
+    let s = fs::read_to_string(path)?;
+    Ok(serde_json::from_str(&s)?)
+}
+
+pub fn run(
+    input: &Path,
+    print_id: bool,
+    print_nf: bool,
+    out: Option<&Path>,
+    check: bool,
+) -> Result<()> {
+    let src = read_json(input)?;
+    let nf = strict_nf(&src)?;
 
     if print_id {
-        println!("{}", nf_hex);
-        println!("[forge] NF-ID={}", nf_hex);
+        let id = strict_nf_hex(&src)?;
+        // печатаем «сырой» ID (для пайпов) и удобную строку, как в примерах
+        println!("{}", id);
+        println!("[forge] NF-ID={}", id);
+    }
+
+    if check {
+        // true, если файл уже в канонической форме
+        if src == nf {
+            println!("[forge] Input is already canonical.");
+        } else {
+            bail!("input is not canonical (differs from canonical NF)");
+        }
     }
 
     if print_nf {
-        println!("{}", serde_json::to_string_pretty(&nf).unwrap_or_else(|_| "{}".to_string()));
+        println!("{}", serde_json::to_string_pretty(&nf)?);
     }
 
-    if let Some(out_path) = out {
-        if let Some(parent) = out_path.parent() {
-            std::fs::create_dir_all(parent).ok();
-        }
-        let mut f = File::create(out_path).with_context(|| format!("create {:?}", out_path))?;
-        write!(f, "{}", serde_json::to_string_pretty(&nf).unwrap_or_else(|_| "{}".to_string()))?;
-        println!("[forge] Wrote {:?}", out_path);
+    if let Some(path) = out {
+        fs::create_dir_all(path.parent().unwrap_or_else(|| Path::new(".")))?;
+        fs::write(path, serde_json::to_string_pretty(&nf)?)?;
+        println!("[forge] Wrote {:?}", path);
     }
 
     Ok(())

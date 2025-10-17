@@ -53,3 +53,18 @@ jobs:
             build_migrated/overview.html
             build_migrated/**/*.wfr.json
             build_i23/**/*.wfr.json
+
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        run: cargo build
+      - name: Strict clippy
+        run: bash ci/strict_clippy_gate.sh
+      - name: Forge Gate
+        run: bash ci/forge_gate.sh
+      - name: NF-DIFF Gate
+        run: bash scripts/ci/nf_diff_gate.sh
+      - name: COLA -> WFR
+        run: bash ci/overview_gate.sh
+      - name: Validate WFR
+        run: bash ci/run_wfr_migration_and_check.sh

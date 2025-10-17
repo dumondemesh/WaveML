@@ -1,15 +1,8 @@
-## [1.1] - 2025-10-16
-### Added
-- `W.params`: `n_fft`, `hop`, `window`, `center`, `pad_mode=reflect` (R7 guard).
-- New operator `Align` (`mode: xcorr_soft|xcorr_hard`, `radius`).
-- Reports: include `ops[].params` for `W` and perf hint `{fft_backend, frame_count, n_fft}`.
+## 2025-10-17 — v0.2.0-rc1 (Phase P1/I1)
 
-### Changed
-- W/T now use rustfft backend (O(N log N)), roundtrip RMSE ≤ 1e-8 @ (1024,256).
-
-### Lint/Acceptance
-- Safety forbids `A∘Align` (allows `Align∘A`).
-- Added acceptance tests for W params, WT roundtrip, and Align PASS/FAIL.
-
----
-(older entries omitted)
+- waveforge: add stable API `canonicalize_graph` and `nf_id_hex` (deprecate internal names).
+- wavectl forge: strict stdout contract for `--print-id` (hex only); add `--with-banner` for human output.
+- wavectl forge: add `--input -` (stdin) and glob input support.
+- schemas: add `graph.schema.json` (schema_semver=1.0.0).
+- tests: add property-based tests for STRICT-NF (proptest).
+- CI: add `schema_gate.sh`, `property_gate.sh`, update `run_all_gates.sh`.
