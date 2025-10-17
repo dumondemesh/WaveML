@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WFR 1.0.0 (minimal P0)",
+  "type": "object",
+  "required": ["schema_version","cert","w_params","w_perf","metrics"],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^1\.0\.0$" },
+    "cert": { "type": "object" },
+    "w_params": {
+      "type": "object",
+      "properties": {
+        "n_fft": { "type": ["integer","null"], "minimum": 0 },
+        "hop": { "type": ["integer","null"], "minimum": 0 },
+        "window": { "type": ["string","null"] },
+        "center": { "type": "boolean" },
+        "pad_mode": { "type": "string" }
+      },
+      "required": ["center","pad_mode"]
+    },
+    "w_perf": {
+      "type": "object",
+      "properties": {
+        "backend": { "type": "string" },
+        "n_fft": { "type": ["integer","null"] },
+        "hop": { "type": ["integer","null"] },
+        "cola_rel_dev": { "type": ["number","null"] },
+        "cola_pass": { "type": ["boolean","null"] }
+      },
+      "required": ["backend"]
+    },
+    "metrics": { "type": "object" }
+  }
+}

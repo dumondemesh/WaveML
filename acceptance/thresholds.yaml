@@ -1,0 +1,5 @@
+# Placeholder thresholds for future metrics gating
+cola_max_dev: 1.0e-12
+mse_max: 0.0
+rel_mse_max: 0.0
+snr_db_min: 100.0

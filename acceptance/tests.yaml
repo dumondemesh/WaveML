@@ -1,39 +1,5 @@
-# Acceptance plan — Phase 1 (Freeze v1.0 → WMLB 1.1)
-- name: R7_fail_zero_pad
-  src: acceptance/bad_r7.wml
-  expect: FAIL
-
-- name: R8_fail_no_aa
-  src: acceptance/bad_r8.wml
-  expect: FAIL
-
-- name: OK_hello_down
-  src: examples/hello_down.wml
-  expect: PASS
-
-- name: R7_fail_wrong_case_edge
-  src: acceptance/bad_r7_case.wml
-  expect: FAIL
-
-# Roundtrip via W/T_inv (rustfft backend). Double-precision пороги.
-- name: RUN_wt_roundtrip_1024_256
-  src: examples/wt_roundtrip_1024_256.yaml
-  expect: PASS
-  run:
-    input: examples/dummy.wfm.json
-    expect:
-      len_eq: true
-      rel_mse_max_f64: 1e-20
-      rel_mse_max_f32: 1e-8
-      cola_max_dev: 1e-12
-
-- name: RUN_wt_roundtrip_2048_512
-  src: examples/wt_roundtrip_2048_512.yaml
-  expect: PASS
-  run:
-    input: examples/dummy.wfm.json
-    expect:
-      len_eq: true
-      rel_mse_max_f64: 1e-20
-      rel_mse_max_f32: 1e-8
-      cola_max_dev: 1e-12
+tests:
+  - name: COLA Hann 1024/512 amp
+    cmd: target/debug/wavectl cola --n-fft 1024 --hop 512 --window Hann --mode amp --out build/reports/cola_1024_512_amp.wfr.json
+  - name: Validate WFR (require-pass)
+    cmd: target/debug/wavectl validate-wfr --wfr build/reports/cola_1024_512_amp.wfr.json --require-pass

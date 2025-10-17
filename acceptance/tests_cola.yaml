@@ -1,0 +1,40 @@
+tests:
+  - name: COLA_Hann_1024_512_amp
+    n_fft: 1024
+    hop: 512
+    window: Hann
+    tol: 1e-12
+    mode: amp
+    expect: PASS
+
+  - name: COLA_Hann_2048_1024_amp
+    n_fft: 2048
+    hop: 1024
+    window: Hann
+    tol: 1e-12
+    mode: amp
+    expect: PASS
+
+  - name: COLA_Rect_1024_256_amp
+    n_fft: 1024
+    hop: 256
+    window: Rect
+    tol: 1e-12
+    mode: amp
+    expect: PASS
+
+  - name: COLA_Hann_1024_256_power
+    n_fft: 1024
+    hop: 256
+    window: Hann
+    tol: 1e-12
+    mode: power
+    expect: PASS
+
+  - name: COLA_Hann_bad_hop_amp_FAIL
+    n_fft: 1024
+    hop: 300
+    window: Hann
+    tol: 1e-6
+    mode: amp
+    expect: FAIL

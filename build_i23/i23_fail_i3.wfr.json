@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0.0",
+  "cert": {
+    "i2": true,
+    "i3": false
+  },
+  "w_params": {},
+  "w_perf": {
+    "cola_rel_dev": null,
+    "cola_pass": false
+  },
+  "swap": {
+    "swaps": [
+      {
+        "idx": 0,
+        "pair": "W∘Align",
+        "delta_L": -0.024216443673594868,
+        "delta_L_coh": -0.00018820779396138855,
+        "allowed": true
+      },
+      {
+        "idx": 1,
+        "pair": "Φ∘W",
+        "delta_L": -0.031661678807332824,
+        "delta_L_coh": -0.0003517645371925747,
+        "allowed": true
+      },
+      {
+        "idx": 2,
+        "pair": "C∘A",
+        "delta_L": -0.014472251305374306,
+        "delta_L_coh": -0.0009174683749978606,
+        "allowed": true
+      },
+      {
+        "idx": 3,
+        "pair": "W∘Align",
+        "delta_L": -0.0329394668012231,
+        "delta_L_coh": -0.0006733876067468693,
+        "allowed": true
+      },
+      {
+        "idx": 4,
+        "pair": "W∘Align",
+        "delta_L": -0.08374213677400821,
+        "delta_L_coh": -0.00019932094924938516,
+        "allowed": true
+      },
+      {
+        "idx": 5,
+        "pair": "T∘W",
+        "delta_L": -0.08954272769923641,
+        "delta_L_coh": -0.0003589745394709747,
+        "allowed": true
+      },
+      {
+        "idx": 6,
+        "pair": "D∘W",
+        "delta_L": -0.03381015506596766,
+        "delta_L_coh": -0.00043514590528301046,
+        "allowed": true
+      },
+      {
+        "idx": 7,
+        "pair": "T∘W",
+        "delta_L": -0.0027702367210829196,
+        "delta_L_coh": -0.0006792104144017926,
+        "allowed": true
+      }
+    ],
+    "sum_delta_L": -0.31315509684782034,
+    "sum_delta_L_coh": -0.0038034801213038564
+  },
+  "metrics": {
+    "swap_count": 8
+  },
+  "ir_manifest": {
+    "source": "examples/graph/i23_fail_i3.json"
+  }
+}

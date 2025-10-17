@@ -1,0 +1,34 @@
+{
+  "header": {
+    "domain": "audio",
+    "rate": 16000,
+    "ver": "1.0"
+  },
+  "tracks": {
+    "mono": [
+      0.0,
+      0.9999999999996871,
+      -1.4978412663104495e-13,
+      -6.684749382498327e-14
+    ]
+  },
+  "passports": {
+    "Proj": true,
+    "ScaleNorm": true
+  },
+  "schema_version": "1.0.0",
+  "cert": {
+    "i1": null,
+    "i2": null,
+    "i3": null,
+    "i4": null,
+    "i5": null
+  },
+  "w_perf": {
+    "cola_rel_dev": null,
+    "cola_pass": false
+  },
+  "metrics": {
+    "rel_mse": 0.0
+  }
+}

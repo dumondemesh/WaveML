@@ -1,271 +1,135 @@
-//! WaveForge — компилятор: WML → WMLB (v0.2: многострочный парсинг аргументов W/D, Unicode-safe)
-use anyhow::*;
-use serde_json::{Map, Value};
-use wmlb::{Graph, Node};
+use anyhow::{anyhow, Result};
+use serde_json::{json, Map, Value};
+use sha2::{Digest, Sha256};
 
-/// Главная функция компиляции
-pub fn compile(src: &str, strict: bool) -> Result<Graph> {
-    if strict {
-        wavelint::all(src)?;
-    }
-    let code = strip_line_comments(src);
-
-    let mut g = Graph::new();
-    let mut id = 0usize;
-
-    // 1) W(...)
-    for args in find_sections(&code, "W") {
-        let params = Value::Object(parse_args(&args)?);
-        id += 1;
-        g.nodes.push(Node {
-            id: format!("w{}", id),
-            op: "W".into(),
-            params,
-            inputs: vec![],
-            outputs: vec![format!("w{}", id)],
-        });
-    }
-
-    // 2) D(...)
-    for args in find_sections(&code, "D") {
-        let params = Value::Object(parse_args(&args)?);
-        id += 1;
-        // подключаемся к последнему выходу, если он есть
-        let input = g
-            .nodes
-            .last()
-            .and_then(|n| n.outputs.last().cloned())
-            .unwrap_or_else(|| "x".into());
-        g.nodes.push(Node {
-            id: format!("d{}", id),
-            op: "D".into(),
-            params,
-            inputs: vec![input],
-            outputs: vec![format!("d{}", id)],
-        });
-    }
-
-    // 3) T() — без аргументов (v0.2 просто обнаруживаем присутствие)
-    if code.contains("T(") {
-        id += 1;
-        let input = g
-            .nodes
-            .last()
-            .and_then(|n| n.outputs.last().cloned())
-            .unwrap_or_else(|| "x".into());
-        g.nodes.push(Node {
-            id: format!("t{}", id),
-            op: "T".into(),
-            params: Value::Object(Map::new()),
-            inputs: vec![input],
-            outputs: vec![format!("t{}", id)],
-        });
-    }
-
-    Ok(g)
+/// STRICT-NF v0:
+/// - drop non-semantic node `id` from NF
+/// - op synonyms (op/type/kind) -> "W" (или UPPERCASE для прочих)
+/// - nfft|n -> n_fft; hop|hop_size|h -> hop; win|w -> window
+/// - window names normalized: "hann"->"Hann", "rect"->"Rect"
+/// - nodes sorted by (op, n_fft, hop, window)
+/// - canonical JSON key ordering
+pub fn strict_nf(manifest: &Value) -> Result<Value> {
+    let g = manifest.get("graph")
+        .ok_or_else(|| anyhow!("manifest has no 'graph'"))?;
+    let nodes = g.get("nodes").and_then(|v| v.as_array()).cloned().unwrap_or_default();
+    let mut nf_nodes: Vec<Value> = nodes.into_iter()
+        .map(normalize_node)
+        .collect::<Result<_>>()?;
+    nf_nodes.sort_by(|a, b| {
+        let ka = node_sort_key(a);
+        let kb = node_sort_key(b);
+        ka.cmp(&kb)
+    });
+    let mut gmap = Map::new();
+    gmap.insert("nodes".to_string(), Value::Array(nf_nodes));
+    let graph_nf = canonicalize(&Value::Object(gmap));
+    Ok(json!({ "graph": graph_nf }))
 }
 
-/// Удаляем `//` комментарии (до конца строки)
-fn strip_line_comments(src: &str) -> String {
-    src.lines()
-        .map(|line| line.split_once("//").map(|(l, _)| l).unwrap_or(line))
-        .collect::<Vec<_>>()
-        .join("\n")
+fn node_sort_key(v: &Value) -> (String, u64, u64, String) {
+    let op = v.get("op").and_then(|s| s.as_str()).unwrap_or("").to_string();
+    let n_fft = v.get("n_fft").and_then(|u| u.as_u64()).unwrap_or(0);
+    let hop = v.get("hop").and_then(|u| u.as_u64()).unwrap_or(0);
+    let window = v.get("window").and_then(|s| s.as_str()).unwrap_or("").to_string();
+    (op, n_fft, hop, window)
 }
 
-/// Находит участки вида `OP( … )` с учётом многострочности, кавычек и вложенных скобок
-fn find_sections(code: &str, op: &str) -> Vec<String> {
-    let pat = format!("{op}(");
-    let chars: Vec<char> = code.chars().collect();
-    let mut i = 0usize;
-    let mut out = Vec::new();
+fn normalize_node(v: Value) -> Result<Value> {
+    if !v.is_object() {
+        return Err(anyhow!("graph node must be object"));
+    }
+    let mut op = None;
+    let mut n_fft: Option<u64> = None;
+    let mut hop: Option<u64> = None;
+    let mut window: Option<String> = None;
 
-    while i < chars.len() {
-        // ищем начало OP(
-        if i + pat.len() <= chars.len() && chars[i..i + pat.len()].iter().collect::<String>() == pat
-        {
-            let mut depth = 1i32;
-            let mut j = i + pat.len(); // позиция после '('
-            let mut in_s = false; // в одинарных кавычках
-            let mut in_d = false; // в двойных кавычках
-            while j < chars.len() {
-                let c = chars[j];
-                match c {
-                    '\'' if !in_d => {
-                        in_s = !in_s;
-                    }
-                    '"' if !in_s => {
-                        in_d = !in_d;
-                    }
-                    '(' if !in_s && !in_d => {
-                        depth += 1;
-                    }
-                    ')' if !in_s && !in_d => {
-                        depth -= 1;
-                        if depth == 0 {
-                            // args между i+pat.len() и j
-                            let args = chars[i + pat.len()..j].iter().collect::<String>();
-                            out.push(args);
-                            i = j + 1;
-                            break;
-                        }
-                    }
-                    _ => {}
+    if let Some(m) = v.as_object() {
+        for (k, val) in m {
+            let k_l = k.to_lowercase();
+            match k_l.as_str() {
+                // `id` намеренно игнорируем в NF
+                "op" | "type" | "kind" => {
+                    if let Some(s) = val.as_str() { op = Some(map_op_name(s)); }
                 }
-                j += 1;
-            }
-            // если вышли из while без break — незакрытая скобка, пропускаем
-        } else {
-            i += 1;
-        }
-    }
-    out
-}
-
-/// Разбивает строку по запятым, игнорируя запятые внутри кавычек
-fn split_commas_outside_quotes(s: &str) -> Vec<String> {
-    let mut out = Vec::new();
-    let mut cur = String::new();
-    let (mut in_s, mut in_d) = (false, false);
-    for c in s.chars() {
-        match c {
-            '\'' if !in_d => {
-                in_s = !in_s;
-                cur.push(c);
-            }
-            '"' if !in_s => {
-                in_d = !in_d;
-                cur.push(c);
-            }
-            ',' if !in_s && !in_d => {
-                if !cur.trim().is_empty() {
-                    out.push(cur.trim().to_string());
+                "n_fft" | "nfft" | "n" => {
+                    if let Some(u) = as_u64(val) { n_fft = Some(u); }
+                    else if let Some(s) = val.as_str() { if let Ok(u) = s.parse::<u64>() { n_fft = Some(u); } }
                 }
-                cur.clear();
+                "hop" | "hop_size" | "h" => {
+                    if let Some(u) = as_u64(val) { hop = Some(u); }
+                    else if let Some(s) = val.as_str() { if let Ok(u) = s.parse::<u64>() { hop = Some(u); } }
+                }
+                "window" | "win" | "w" => {
+                    if let Some(s) = val.as_str() { window = Some(map_window_name(s)); }
+                }
+                _ => { /* drop unknowns for v0 */ }
             }
-            _ => cur.push(c),
         }
     }
-    if !cur.trim().is_empty() {
-        out.push(cur.trim().to_string());
-    }
-    out
+    let op_final = op.unwrap_or_else(|| "W".to_string());
+    let mut out = Map::new();
+    out.insert("op".to_string(), Value::String(op_final));
+    if let Some(n) = n_fft { out.insert("n_fft".to_string(), Value::Number(n.into())); }
+    if let Some(h) = hop { out.insert("hop".to_string(), Value::Number(h.into())); }
+    if let Some(w) = window { out.insert("window".to_string(), Value::String(w)); }
+    Ok(Value::Object(out))
 }
 
-/// Делит строку по первому разделителю вне кавычек (байтовый оффсет, Unicode-safe).
-fn split_once_outside_quotes(s: &str, sep: char) -> Option<(&str, &str)> {
-    let (mut in_s, mut in_d) = (false, false);
-    for (i, c) in s.char_indices() {
-        match c {
-            '\'' if !in_d => in_s = !in_s,
-            '"' if !in_s => in_d = !in_d,
-            _ if c == sep && !in_s && !in_d => {
-                // i — БАЙТОВЫЙ индекс начала `sep`
-                let after = i + sep.len_utf8();
-                return Some((&s[..i], &s[after..]));
-            }
-            _ => {}
-        }
-    }
+fn as_u64(v: &Value) -> Option<u64> {
+    if let Some(u) = v.as_u64() { return Some(u); }
+    if let Some(i) = v.as_i64() { if i >= 0 { return Some(i as u64); } }
     None
 }
 
-/// Разбираем аргументы вида `key=value, key="str", 'ключ'=123` → JSON-Map
-fn parse_args(args: &str) -> Result<Map<String, Value>> {
-    // разбиваем по запятым вне кавычек
-    let parts = split_commas_outside_quotes(args);
-    let mut map = Map::new();
-
-    for raw in parts {
-        // поддерживаем и '=' и ':' как разделители ключ/значение
-        let kv = split_once_outside_quotes(&raw, '=')
-            .or_else(|| split_once_outside_quotes(&raw, ':'))
-            .ok_or_else(|| anyhow!("некорректный аргумент: `{}`", raw))?;
-
-        let (k, v) = kv;
-        let key = normalize_key(k.trim().trim_matches(&['"', '\''][..]));
-        let val_str = v.trim();
-        let val = parse_value(val_str);
-
-        map.insert(key, val);
-    }
-    Ok(map)
-}
-
-fn normalize_key(k: &str) -> String {
-    if k == "λ" || k.eq_ignore_ascii_case("lambda") {
-        "lambda".into()
-    } else if k == "Φ" || k.eq_ignore_ascii_case("phi") {
-        "phi".into()
-    } else {
-        k.to_string()
+fn map_op_name(s: &str) -> String {
+    match s.trim().to_lowercase().as_str() {
+        "w" | "window" | "wave" | "waveop" => "W".to_string(),
+        "t" => "T".to_string(),
+        "d" => "D".to_string(),
+        "a" => "A".to_string(),
+        "c" => "C".to_string(),
+        "phi" | "φ" | "phiop" => "Phi".to_string(),
+        other => other.to_string().to_uppercase(),
     }
 }
 
-fn parse_value(s: &str) -> Value {
-    let t = s.trim();
-    // строки в кавычках
-    if (t.starts_with('"') && t.ends_with('"')) || (t.starts_with('\'') && t.ends_with('\'')) {
-        return Value::String(t[1..t.len() - 1].to_string());
+fn map_window_name(s: &str) -> String {
+    match s.trim().to_lowercase().as_str() {
+        "hann" | "hanning" => "Hann".to_string(),
+        "rect" | "boxcar" | "rectangular" => "Rect".to_string(),
+        other => {
+            let mut chrs = other.chars();
+            match chrs.next() {
+                Some(first) => first.to_uppercase().collect::<String>() + chrs.as_str(),
+                None => String::new(),
+            }
+        }
     }
-    // bool
-    if t.eq_ignore_ascii_case("true") {
-        return Value::Bool(true);
-    }
-    if t.eq_ignore_ascii_case("false") {
-        return Value::Bool(false);
-    }
-    // null
-    if t.eq_ignore_ascii_case("null") {
-        return Value::Null;
-    }
-    // число
-    if let std::result::Result::Ok(num) = t.parse::<f64>() {
-        return Value::from(num);
-    }
-    // fallback — как строка без кавычек
-    Value::String(t.to_string())
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use serde_json::json;
-
-    #[test]
-    fn find_sections_multiline() {
-        let s = r#"
-        x = W(
-            bank="stft",
-            edge="reflect"
-        )(x)
-        "#;
-        let v = find_sections(s, "W");
-        assert_eq!(v.len(), 1);
-        assert!(v[0].contains("bank=\"stft\""));
-        assert!(v[0].contains("edge=\"reflect\""));
+/// Canonicalize JSON:
+fn canonicalize(v: &Value) -> Value {
+    match v {
+        Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_) => v.clone(),
+        Value::Array(arr) => Value::Array(arr.iter().map(canonicalize).collect()),
+        Value::Object(map) => {
+            let mut keys: Vec<&String> = map.keys().collect();
+            keys.sort();
+            let mut out = Map::new();
+            for k in keys { out.insert(k.clone(), canonicalize(&map[k])); }
+            Value::Object(out)
+        }
     }
+}
 
-    #[test]
-    fn parse_args_lambda_aa() {
-        let args = r#"λ=2, aa="sinc""#;
-        let kv = parse_args(args).unwrap();
-        assert_eq!(kv.get("lambda").unwrap(), &json!(2.0)); // λ → lambda
-        assert_eq!(kv.get("aa").unwrap(), &json!("sinc"));
-    }
-
-    #[test]
-    fn compile_parses_w_d_t() {
-        let s = r#"
-            input x: WaveForm(domain="audio")
-            x = W(bank="stft", edge="Toeplitz")(x)
-            x = D(λ=2, aa="sinc")(x)
-            y = T()(x)
-        "#;
-        // strict включает линтеры R7/R8 — кейс корректный
-        let g = compile(s, true).unwrap();
-        assert!(g.nodes.iter().any(|n| n.op == "W"));
-        assert!(g.nodes.iter().any(|n| n.op == "D"));
-        assert!(g.nodes.iter().any(|n| n.op == "T"));
-    }
+/// Stable SHA-256 hex от канонического `graph`
+pub fn strict_nf_hex(manifest: &Value) -> Result<String> {
+    let nf = strict_nf(manifest)?;
+    let graph = nf.get("graph").unwrap(); // safe
+    let bytes = serde_json::to_vec(graph).unwrap();
+    let mut hasher = Sha256::new();
+    hasher.update(&bytes);
+    let digest = hasher.finalize();
+    Ok(hex::encode(digest))
 }

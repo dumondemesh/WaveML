@@ -1,0 +1,12 @@
+[package]
+name = "waveeval"
+version = "0.2.2"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[lib]
+name = "waveeval"
+path = "src/lib.rs"
+
+[dependencies]
+anyhow = "1.0"

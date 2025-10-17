@@ -1,0 +1,41 @@
+name: WaveML strict gates
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  strict-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        run: cargo build
+      - name: Run acceptance (optional local script if present)
+        run: |
+          if [[ -f ci/run_ci_local.sh ]]; then bash ci/run_ci_local.sh; fi
+      - name: Strict Clippy Gate
+        run: bash ci/strict_clippy_gate.sh
+      - name: Unit Test Gate
+        run: bash ci/unit_test_gate.sh
+      - name: Deps Gate
+        run: bash ci/deps_gate.sh
+      - name: Docs Gate
+        run: bash ci/docs_gate.sh
+      - name: Overview Gate
+        run: |
+          if [[ -f ci/overview_gate.sh ]]; then bash ci/overview_gate.sh build_migrated; fi
+      - name: Schema Gate
+        run: |
+          if [[ -f ci/wfr_schema_gate.py ]]; then python3 ci/wfr_schema_gate.py build_migrated; fi
+      - name: Forge Gate
+        run: |
+          if [[ -f ci/forge_gate.sh ]]; then bash ci/forge_gate.sh; fi
+      - name: Package release artifacts
+        run: bash ci/release_artifacts.sh build_migrated out && ls -l out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: waveml-artifacts
+          path: |
+            out/**

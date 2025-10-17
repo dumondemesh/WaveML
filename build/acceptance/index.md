@@ -1,10 +1,12 @@
 # Acceptance — summary
 
-**Всего:** 4  |  **Пройдено:** 4  |  **Провалено:** 0
+**Всего:** 6  |  **Совпало:** 6  |  **Не совпало:** 0
 
 | Тест | Expect | Result | Заметка |
 |------|--------|--------|---------|
-| RUN_wt_roundtrip_1024_256 | PASS | ✅ | mse=3.119645e-26;  I1=true |
-| RUN_wt_roundtrip_2048_512 | PASS | ✅ | mse=3.119645e-26;  I1=true |
-| OK_align_after_a | PASS | ✅ |  I1=true |
-| FAIL_a_after_align | FAIL | ✅ | err saved: build/acceptance/FAIL_a_after_align.err.txt |
+| R7_pass_reflect | PASS | PASS | ok |
+| R7_fail_zero_pad | FAIL | FAIL | ok |
+| R8_pass_aa_and_passports | PASS | PASS | ok |
+| R8_fail_no_aa | FAIL | FAIL | ok |
+| R9_fail_A_after_Align | FAIL | FAIL | ok |
+| R9_pass_Align_after_A | PASS | PASS | ok |

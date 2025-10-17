@@ -1,0 +1,9 @@
+{
+  "module": "other",
+  "graph": {
+    "nodes": [
+      { "kind": "window", "nfft": 1024, "hop_size": 512, "w": "hann", "id": "node-a" },
+      { "kind": "w", "nfft": 2048, "hop_size": 1024, "w": "hann", "id": "node-b" }
+    ]
+  }
+}

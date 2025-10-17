@@ -1,0 +1,43 @@
+{
+  "certificate": {
+    "i1": true,
+    "i2": true,
+    "i3": true,
+    "i4": true,
+    "i5": true,
+    "r7_ok": true,
+    "r8_ok": true
+  },
+  "ops": {
+    "aa_missing": 0,
+    "counts": {
+      "D": 1,
+      "T": 1,
+      "W": 1
+    },
+    "edges_seen": [
+      "reflect"
+    ],
+    "lambdas": [
+      3.0
+    ]
+  },
+  "source": {
+    "git_sha": null
+  },
+  "schema_version": "1.0.0",
+  "cert": {
+    "i1": null,
+    "i2": null,
+    "i3": null,
+    "i4": null,
+    "i5": null
+  },
+  "w_perf": {
+    "cola_rel_dev": null,
+    "cola_pass": false
+  },
+  "metrics": {
+    "rel_mse": 0.0
+  }
+}

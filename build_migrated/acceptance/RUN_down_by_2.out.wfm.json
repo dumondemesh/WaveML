@@ -1,0 +1,17 @@
+{
+  "header": {
+    "domain": "audio",
+    "rate": 8000,
+    "ver": "1.0"
+  },
+  "tracks": {
+    "mono": [
+      -1.3340728434237946e-13,
+      0.5000154334412132
+    ]
+  },
+  "passports": {
+    "Proj": true,
+    "ScaleNorm": true
+  }
+}

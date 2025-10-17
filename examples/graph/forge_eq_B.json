@@ -1,0 +1,8 @@
+{
+  "graph": {
+    "nodes": [
+      { "op": "W", "n_fft": "2048", "hop": "1024", "window": "hann", "id": "W2" },
+      { "type": "W", "n": "1024", "h": "512", "win": "HANN", "id": "W1" }
+    ]
+  }
+}

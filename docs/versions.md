@@ -1,7 +1,28 @@
-# Versions — Freeze v1.0 → v1.1 (MINOR)
+# Версии и схемы WFR v1.x
 
-- WaveML Core: Freeze v1.0 (commit 8bb508f)
-- **WMLB/ABI: 1.1** — добавлены `W.params.{n_fft, hop, window, center, pad_mode=reflect}`; добавлен оператор `Align(mode=xcorr_* , radius=k)`.
-- WaveReport (.wfr): v1.1 — `ops[].params` и `perf` (rmse,snr_db,elapsed_ms) в отчёте.
-- WaveForm/WaveStream: v1.0 (без изменений)
-- WMPKG: v1.0 (без изменений)
+## W.params
+| поле     | тип   | комментарий            |
+|----------|-------|------------------------|
+| n_fft    | u32   | размер окна FFT        |
+| hop      | u32   | шаг окна               |
+| window   | str   | Hann/Hamming/Blackman  |
+| center   | bool  | центрировать ли окно   |
+| pad_mode | str   | reflect (no zero-pad)  |
+| mode     | str   | amp/power/...          |
+
+## W.perf
+| поле            | тип     | комментарий                 |
+|-----------------|---------|-----------------------------|
+| backend         | str     | rustfft/…                   |
+| backend_version | str     | версия бэкенда              |
+| wall_ms         | f64     | время исполнения            |
+| frames          | u64     | число обработанных кадров   |
+| threads         | u32?    | (опц.) число потоков        |
+
+## Metrics (зарезервировано)
+| поле        | тип  | комментарий          |
+|-------------|------|----------------------|
+| mse         | f64? |                      |
+| rel_mse     | f64? |                      |
+| snr_db      | f64? |                      |
+| cola_maxdev | f64? | максимум откл. COLA  |

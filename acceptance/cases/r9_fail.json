@@ -1,0 +1,16 @@
+{
+  "version": "0.3.0",
+  "schema_semver": "0.3.0",
+  "domain": "audio",
+  "endianness": "little",
+  "timebase": {"unit":"s","tick":1},
+  "profiles": ["WF-Core"],
+  "graph": {
+    "passports": {},
+    "nodes": [
+      {"id":"al","op":"Align","params":{}},
+      {"id":"a","op":"A","params":{"kind":"gain"}}
+    ],
+    "edges": [{"from":"al","to":"a"}]
+  }
+}

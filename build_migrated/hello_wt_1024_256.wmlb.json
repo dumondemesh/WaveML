@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "created_at": "2025-10-16T16:51:02.153843Z",
+  "nodes": [
+    {
+      "id": "w1",
+      "op": "W",
+      "params": {
+        "bank": "stft",
+        "edge": "reflect",
+        "hop": 256.0,
+        "n_fft": 1024.0
+      },
+      "inputs": [],
+      "outputs": [
+        "w1"
+      ]
+    },
+    {
+      "id": "t2",
+      "op": "T",
+      "params": {},
+      "inputs": [
+        "w1"
+      ],
+      "outputs": [
+        "t2"
+      ]
+    }
+  ]
+}

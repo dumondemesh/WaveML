@@ -1,12 +1,15 @@
-[![WaveML Acceptance](https://github.com/dumondemesh/WaveML/actions/workflows/acceptance.yml/badge.svg)](https://github.com/dumondemesh/WaveML/actions/workflows/acceptance.yml)
-# WaveML (proto)
+# WFR Migration Toolkit (legacy -> 1.0.0)
 
-WaveML — минимальный стек для декларативного аудио-ML графа: компилятор (WML→IR),
-линтеры (R7/R8), рантайм (W/T/D), отчёты `.wfr`, acceptance-раннер.
+Этот пакет помогает быстро **мигрировать старые отчёты WFR** (без `schema_version`) к единому формату **WFR v1.0.0**, не трогая пока Rust-код.
 
-## Быстрый старт
-```bash
-cargo build
-cargo run -p wavectl -- compile examples/hello_down.wml -o build/hello_down.wmlb.json --strict
-cargo run -p wavectl -- run build/hello_down.wmlb.json --in examples/dummy.wfm.json --out build/out.wfm.json
-cargo run -p wavectl -- acceptance --plan acceptance/tests.yaml --outdir build/acceptance --strict
+## Что внутри
+- `tools/migrate_wfr.py` — скрипт миграции (build → build_migrated).
+- `tools/overview_v3.py` — расширенный обзор (подсветка пустых полей cert/metrics/w_perf).
+- `docs/USAGE.md` — как запускать.
+
+## Мини-цели
+1. Привести все `.wfr.json` к одному формату (v1.0.0).
+2. Обеспечить наличие ключей: `cert`, `w_params`, `w_perf`, `metrics`.
+3. Не ломать текущие пайплайны — миграция идёт **в отдельную папку** (`build_migrated/`).
+
+После миграции можно постепенно заменить генераторы отчётов в Rust на новый формат.

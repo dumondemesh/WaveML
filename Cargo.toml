@@ -2,27 +2,27 @@
 members = [
     "crates/wmlb",
     "crates/waveform",
-    "crates/wavelint",
-    "crates/waveforge",
-    "crates/waverunner",
     "crates/wavereport",
+    "crates/linters",
     "crates/wavectl",
 ]
 resolver = "2"
 
 [workspace.package]
 edition = "2021"
-version = "0.1.0"
+license = "MIT OR Apache-2.0"
 authors = ["WaveML Team"]
-license = "Apache-2.0"
+rust-version = "1.75"
 
 [workspace.dependencies]
-anyhow = "1"
-thiserror = "1"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-clap = { version = "4", features = ["derive"] }
-log = "0.4"
-env_logger = "0.11"
-time = { version = "0.3", features = ["formatting", "macros"] }
-serde_yaml = "0.9"
+anyhow = "1.0"
+thiserror = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+hex = "0.4"
+clap = { version = "4.5", features = ["derive"] }
+chrono = { version = "0.4", features = ["serde"] }
+# optional deps; not required for minimal build:
+# ed25519-dalek = { version = "2", default-features = false, features = ["rand_core"] }
+# zstd = "0.13"

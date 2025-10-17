@@ -1,0 +1,11 @@
+# Acceptance: CI Gate — ensure unified WFR format presence
+checks:
+  - file: build_migrated/reports/auto_amp.wfr.json
+    assert:
+      - keys_exist: ["schema_version", "cert", "w_params", "w_perf", "metrics"]
+  - file: build_migrated/acceptance_auto/RFG_demo_w_json_amp_should_pass.auto.wfr.json
+    assert:
+      - keys_exist: ["schema_version", "cert", "w_params", "w_perf", "metrics"]
+  - file: build_migrated/acceptance_i23/I23_pass_monotone_conservative.auto.wfr.json
+    assert:
+      - keys_exist: ["schema_version", "cert", "w_params", "w_perf", "metrics"]

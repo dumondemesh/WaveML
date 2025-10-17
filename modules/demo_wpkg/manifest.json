@@ -1,0 +1,9 @@
+{
+  "module": "demo_wpkg",
+  "graph": {
+    "nodes": [
+      { "id": "W1", "op": "W", "n_fft": 1024, "hop": 512, "window": "Hann" }
+    ]
+  },
+  "meta": { "version": "0.1.0", "abi": "WMLB-0" }
+}
