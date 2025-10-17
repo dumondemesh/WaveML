@@ -1,6 +1,6 @@
 [package]
 name = "wavectl"
-version = "0.3.5"
+version = "0.3.6"
 edition = "2021"
 
 [dependencies]
@@ -14,3 +14,4 @@ uuid = { version = "1", features = ["v4"] }
 
 wave_logging = { path = "../wave_logging" }
 wavereport   = { path = "../wavereport" }
+waveforge    = { path = "../waveforge" }

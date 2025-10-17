@@ -1,7 +1,22 @@
 {
-  "module": "demo_i23",
-  "meta": { "abi": "WMLB-0", "version": "0.1.0", "i23": { "violate_i2": false, "violate_i3": true, "violate_coh": false } },
-  "graph": { "nodes": [
-    { "op": "W", "n_fft": 1024, "hop": 512, "window": "Hann" }
-  ]}
+  "graph": {
+    "nodes": [
+      {
+        "hop": 512,
+        "n_fft": 1024,
+        "op": "W",
+        "window": "Hann"
+      }
+    ]
+  },
+  "meta": {
+    "abi": "WMLB-0",
+    "i23": {
+      "violate_coh": false,
+      "violate_i2": false,
+      "violate_i3": true
+    },
+    "version": "0.1.0"
+  },
+  "module": "demo_i23"
 }

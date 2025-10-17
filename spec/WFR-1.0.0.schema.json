@@ -1,33 +1,104 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "WFR 1.0.0 (minimal P0)",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Wave Report v1.x",
   "type": "object",
-  "required": ["schema_version","cert","w_params","w_perf","metrics"],
   "properties": {
-    "schema_version": { "type": "string", "pattern": "^1\.0\.0$" },
-    "cert": { "type": "object" },
+    "module": {
+      "type": "string"
+    },
+    "mdl": {
+      "type": "object",
+      "properties": {
+        "l": {
+          "type": "number"
+        },
+        "l_struct": {
+          "type": "number"
+        },
+        "l_params": {
+          "type": "number"
+        },
+        "l_fit": {
+          "type": "number"
+        },
+        "l_coh": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": true
+    },
     "w_params": {
       "type": "object",
       "properties": {
-        "n_fft": { "type": ["integer","null"], "minimum": 0 },
-        "hop": { "type": ["integer","null"], "minimum": 0 },
-        "window": { "type": ["string","null"] },
-        "center": { "type": "boolean" },
-        "pad_mode": { "type": "string" }
+        "n_fft": {
+          "type": "integer"
+        },
+        "hop": {
+          "type": "integer"
+        },
+        "window": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string"
+        },
+        "center": {
+          "type": "boolean"
+        },
+        "pad_mode": {
+          "type": "string"
+        }
       },
-      "required": ["center","pad_mode"]
+      "required": [
+        "n_fft",
+        "hop",
+        "window",
+        "mode"
+      ],
+      "additionalProperties": true
     },
     "w_perf": {
       "type": "object",
       "properties": {
-        "backend": { "type": "string" },
-        "n_fft": { "type": ["integer","null"] },
-        "hop": { "type": ["integer","null"] },
-        "cola_rel_dev": { "type": ["number","null"] },
-        "cola_pass": { "type": ["boolean","null"] }
+        "backend": {
+          "type": "string"
+        },
+        "backend_version": {
+          "type": "string"
+        },
+        "wall_ms": {
+          "type": "number"
+        },
+        "frames": {
+          "type": "integer"
+        },
+        "threads": {
+          "type": "integer"
+        }
       },
-      "required": ["backend"]
+      "additionalProperties": true
     },
-    "metrics": { "type": "object" }
-  }
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "cola_rel_dev": {
+          "type": "number"
+        },
+        "cola_mean": {
+          "type": "number"
+        },
+        "cola_tol": {
+          "type": "number"
+        },
+        "cola_pass": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "mdl"
+  ],
+  "additionalProperties": true
 }

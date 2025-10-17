@@ -2,15 +2,11 @@
   "graph": {
     "nodes": [
       {
-        "hop": 256,
+        "center": false,
+        "hop": 512,
         "n_fft": 1024,
         "op": "W",
-        "window": "Hann"
-      },
-      {
-        "hop": 1024,
-        "n_fft": 2048,
-        "op": "W",
+        "pad_mode": "reflect",
         "window": "Hann"
       }
     ]

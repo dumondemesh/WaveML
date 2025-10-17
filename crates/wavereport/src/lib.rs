@@ -1,5 +1,7 @@
-pub mod wfr_v1;
+// Re-export all public items from the v1 WFR module without spelling them out
+// to avoid name drift between this facade and the canonical definitions.
+// This keeps the API stable for dependents (wavectl, runners, etc.).
+#![allow(clippy::module_inception)]
 
-pub use wfr_v1::{
-    WfrV1, Cert, Mdl, Phase, Swap, WParams, WPerf, Metrics, LogEvent, write_wfr
-};
+pub mod wfr_v1;
+pub use wfr_v1::*;

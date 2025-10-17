@@ -1,9 +1,23 @@
 {
-  "module": "other",
   "graph": {
     "nodes": [
-      { "kind": "window", "nfft": 1024, "hop_size": 512, "w": "hann", "id": "node-a" },
-      { "kind": "w", "nfft": 2048, "hop_size": 1024, "w": "hann", "id": "node-b" }
+      {
+        "hop_size": 512,
+        "id": "node-a",
+        "kind": "window",
+        "nfft": 1024,
+        "op": "W",
+        "w": "hann"
+      },
+      {
+        "hop_size": 1024,
+        "id": "node-b",
+        "kind": "w",
+        "nfft": 2048,
+        "op": "W",
+        "w": "hann"
+      }
     ]
-  }
+  },
+  "module": "other"
 }

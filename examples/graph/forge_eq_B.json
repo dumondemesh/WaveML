@@ -1,8 +1,22 @@
 {
   "graph": {
     "nodes": [
-      { "op": "W", "n_fft": "2048", "hop": "1024", "window": "hann", "id": "W2" },
-      { "type": "W", "n": "1024", "h": "512", "win": "HANN", "id": "W1" }
+      {
+        "center": false,
+        "hop": 512,
+        "n_fft": 1024,
+        "op": "W",
+        "pad_mode": "toeplitz",
+        "window": "Hann"
+      },
+      {
+        "center": false,
+        "hop": 1024,
+        "n_fft": 2048,
+        "op": "W",
+        "pad_mode": "toeplitz",
+        "window": "Hann"
+      }
     ]
   }
 }

@@ -1,132 +1,62 @@
-use serde::{Deserialize, Serialize};
-use std::path::Path;
-use std::fs::File;
-use std::io::Write;
-use anyhow::Context;
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Cert {
-    pub i1_unique_nf: bool,
-    pub i2_delta_l_le_0: bool,
-    pub i3_conservative_functors: bool,
-    pub i4_descent: Option<bool>,
-    pub i5_mdl_consistent: Option<bool>,
-    pub notes: Option<String>,
-}
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
-pub struct Mdl {
-    #[serde(rename = "L")]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct MDL {
     pub l: Option<f64>,
-    #[serde(rename = "L_struct")]
     pub l_struct: Option<f64>,
-    #[serde(rename = "L_params")]
     pub l_params: Option<f64>,
-    #[serde(rename = "L_fit")]
     pub l_fit: Option<f64>,
-    #[serde(rename = "L_coh")]
     pub l_coh: Option<f64>,
-    pub lambda: Option<f64>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
-pub struct Phase {
-    pub c_phi: Option<f64>,
-    pub h1: Option<f64>,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
-pub struct Swap {
-    pub epsilon_budget: Option<f64>,
-    pub swaps: u32,
-    pub accepted: u32,
-    pub rejected: u32,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct WParams {
     pub n_fft: u32,
     pub hop: u32,
     pub window: String,
+    pub mode: String,
     pub center: bool,
     pub pad_mode: String,
-    pub mode: String, // amp|phase|complex|...
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct WPerf {
-    pub backend: String,           // e.g., "rustfft"
-    pub backend_version: String,   // e.g., "6.1.0"
+    pub backend: String,
+    pub backend_version: String,
     pub wall_ms: f64,
-    pub frames: u64,
-    pub threads: Option<u32>,
+    pub frames: u32,
+    pub threads: u32,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Metrics {
-    pub mse: Option<f64>,
-    pub rel_mse: Option<f64>,
-    pub snr_db: Option<f64>,
-    pub cola_max_dev: Option<f64>,
+    pub cola_rel_dev: f64,
+    pub cola_mean: f64,
+    pub cola_tol: f64,
+    pub cola_pass: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct LogEvent {
-    pub ts: String,                // RFC3339
-    pub level: String,             // ERROR|WARN|INFO|DEBUG|TRACE
-    pub span: Option<String>,
-    pub msg: String,
-    pub kv: Option<serde_json::Value>,
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct WaveReport {
+    pub module: String,
+    pub mdl: MDL,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub w_params: Option<WParams>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub w_perf: Option<WPerf>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metrics: Option<Metrics>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct WfrV1 {
-    pub schema_version: String,    // "1.x.y"
-    pub created_at: String,        // RFC3339
-    pub run_id: String,
-    pub cert: Cert,
-    pub mdl: Option<Mdl>,
-    pub phase: Option<Phase>,
-    pub swap: Option<Swap>,
-    pub w_params: WParams,
-    pub w_perf: WPerf,
-    pub metrics: Metrics,
-    pub log: Option<Vec<LogEvent>>,
-}
-
-impl WfrV1 {
-    pub fn new(schema_version: &str, run_id: &str, cert: Cert, w_params: WParams, w_perf: WPerf) -> Self {
-        let created_at = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
+impl WaveReport {
+    pub fn new<S: AsRef<str>>(module: S) -> Self {
         Self {
-            schema_version: schema_version.to_owned(),
-            created_at,
-            run_id: run_id.to_owned(),
-            cert,
-            mdl: None,
-            phase: None,
-            swap: None,
-            w_params,
-            w_perf,
-            metrics: Metrics::default(),
-            log: Some(Vec::new()),
+            module: module.as_ref().to_string(),
+            mdl: MDL::default(),
+            w_params: None,
+            w_perf: None,
+            metrics: None,
         }
     }
-
-    pub fn push_log(&mut self, level: &str, span: Option<&str>, msg: &str, kv: Option<serde_json::Value>) {
-        let ts = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
-        let evt = LogEvent {
-            ts, level: level.to_uppercase(),
-            span: span.map(|s| s.to_string()),
-            msg: msg.to_string(),
-            kv,
-        };
-        if let Some(v) = &mut self.log { v.push(evt) }
-    }
-}
-
-pub fn write_wfr(path: &Path, wfr: &WfrV1) -> anyhow::Result<()> {
-    let mut f = File::create(path).with_context(|| format!("create {:?}", path))?;
-    let buf = serde_json::to_string_pretty(wfr).context("serialize WFR v1")?;
-    f.write_all(buf.as_bytes()).context("write WFR v1")?;
-    Ok(())
 }
