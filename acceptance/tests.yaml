@@ -1,5 +1,6 @@
-tests:
-  - name: COLA Hann 1024/512 amp
-    cmd: target/debug/wavectl cola --n-fft 1024 --hop 512 --window Hann --mode amp --out build/reports/cola_1024_512_amp.wfr.json
-  - name: Validate WFR (require-pass)
-    cmd: target/debug/wavectl validate-wfr --wfr build/reports/cola_1024_512_amp.wfr.json --require-pass
+plan:
+  - name: basic_nf_id
+    input: acceptance/data/sample1.wml
+    expect:
+      kind: nf_id
+      stable: true

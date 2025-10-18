@@ -1,6 +1,0 @@
-input x: WaveForm(domain="audio")
-
-X   = W(edge="reflect", n_fft=1024, hop=256)(x)
-Xa  = A(kind="mag", q=1.0)(X)
-Xal = Align(mode="xcorr_soft", radius=8)(Xa)
-y   = T()(Xal)

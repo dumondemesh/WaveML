@@ -1,6 +1,39 @@
-# Placeholder STRICT-NF graph (replace with a real one)
 {
-  "nodes": [],
-  "edges": [],
-  "meta": {"placeholder": true}
+  "nodes": [
+    {
+      "id": "in",
+      "op": "Input",
+      "params": {
+        "shape": [
+          1,
+          1024
+        ]
+      }
+    },
+    {
+      "id": "wt",
+      "op": "W",
+      "params": {
+        "n_fft": 256,
+        "hop": 128,
+        "window": "Hann",
+        "mode": "amp"
+      }
+    },
+    {
+      "id": "out",
+      "op": "Output",
+      "params": {}
+    }
+  ],
+  "edges": [
+    {
+      "src": "in",
+      "dst": "wt"
+    },
+    {
+      "src": "wt",
+      "dst": "out"
+    }
+  ]
 }

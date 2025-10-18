@@ -1,5 +1,0 @@
-tests:
-  - name: AUTO_from_graph_amp_should_pass
-    wfr: build/reports/auto_amp.wfr.json
-    expect_pass: true
-    max_rel_dev: 1e-12

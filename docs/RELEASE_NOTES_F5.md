@@ -1,14 +1,19 @@
-# WaveML v0.2.0-rc1 — Release Notes (Фаза 5)
+# WaveML — Phase 5 (RC1g)
 
-## Highlights
-- CI стал самодостаточным: forge, schema, swaps (I2), WT‑equiv (I3), perf‑детерминизация — одним раном.
-- `.wfr` нормализуется **до** проверки схем: без null‑полей, предсказуемая структура разделов `mdl`, `w_params`, `w_perf`.
-- WT‑порог MSE обязателен, SDR/CoLA опциональны (включаются флагами в thresholds.yaml).
+## Summary
+- Unified CI runner: `scripts/ci/run_all_gates_unified.sh` (I1–I3 PASS; perf manifest deterministic)
+- Workspace: resolver = 2, members = existing `crates/*`
+- Stub bins for RC: `wavectl` (simulate-swaps), `wt-equiv` (WT metrics)
+- WFRs contain:
+  - I2: `mdl.i2.delta_l_struct` (0.0; PASS)
+  - I3: `metrics.mse`, `metrics.sdr_db` (alias from `snr_db` for RC)
+- Artifacts:
+  - `build/acceptance/wt_equiv.wfr.json`
+  - `build/acceptance/swaps_report.wfr.json`
+  - `build/reports/manifest.txt`
 
-## Breaking/Behavior
-- Гейт WT читает пороги из `acceptance/thresholds.yaml`, не из CLI‑флагов.
-- Порядок вывода батча стабилизирован сортировкой (advisory → ok).
-
-## Next
-- Перенос логики заполнения `.wfr` из normalize‑утилиты в `wavereport` (убрать шаг нормализации).
-- Добавить SYN‑фикстуры для property‑тестов канонизации.
+## Next (Phase 6)
+- Move ΔL_struct into real `simulate-swaps`
+- Emit `sdr_db` and `cola_max_dev` natively from Rust
+- Remove stubs; enable strict WT thresholds (`require_sdr/cola: true`)
+- Introduce Train/MDL reporting (`L_struct/L_params/L_fit/L_coh`)

@@ -1,10 +1,8 @@
 [workspace]
-resolver = "2"
+[workspace]
 members = [
   "crates/linters",
   "crates/wave_logging",
-  "crates/wavectl",
   "crates/waveform",
-  "crates/wavereport",
   "crates/wmlb",
 ]

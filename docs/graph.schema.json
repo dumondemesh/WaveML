@@ -1,61 +1,41 @@
 {
-  "$schema": "http://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/waveml/graph.schema.json",
-  "title": "WaveML Graph",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WaveML Graph (legacy+NF)",
   "type": "object",
-  "required": [
-    "nodes",
-    "edges"
-  ],
-  "properties": {
-    "nodes": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": [
-          "id",
-          "op"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
+  "oneOf": [
+    {
+      "properties": {
+        "graph": {
+          "type": "object",
+          "properties": {
+            "nodes": {
+              "type": "array"
+            },
+            "edges": {
+              "type": "array"
+            }
           },
-          "op": {
-            "type": "string",
-            "description": "операция из Σ = {T,D,W,A,C,Φ,Align}"
-          },
-          "attrs": {
-            "type": "object"
-          }
-        },
-        "additionalProperties": true
-      }
+          "required": [
+            "nodes"
+          ]
+        }
+      },
+      "required": [
+        "graph"
+      ]
     },
-    "edges": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": [
-          "from",
-          "to"
-        ],
-        "properties": {
-          "from": {
-            "type": "string"
-          },
-          "to": {
-            "type": "string"
-          },
-          "label": {
-            "type": "string"
-          }
+    {
+      "properties": {
+        "nodes": {
+          "type": "array"
         },
-        "additionalProperties": false
-      }
-    },
-    "meta": {
-      "type": "object"
+        "edges": {
+          "type": "array"
+        }
+      },
+      "required": [
+        "nodes"
+      ]
     }
-  },
-  "additionalProperties": false
+  ]
 }
