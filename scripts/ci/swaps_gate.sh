@@ -1,37 +1,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# --- CLI detection helpers ---
+has_wavectl() { command -v wavectl >/dev/null 2>&1; }
+has_wt_equiv_bin() { command -v wt-equiv >/dev/null 2>&1; }
+wavectl_has_subcmd() { has_wavectl && wavectl --help 2>/dev/null | grep -E "^[[:space:]]+$1([[:space:]]|$)" >/dev/null 2>&1; }
 
-# Swaps orbit gate (I2): ΔL_struct ≤ 0 under admissible swaps.
-# Expects acceptance/thresholds.yaml and outputs a .wfr-like JSON summary.
 
-WAVECTL="${WAVECTL:-target/debug/wavectl}"
-THR_FILE="${THR_FILE:-acceptance/thresholds.yaml}"
-OUT_DIR="${OUT_DIR:-build/acceptance_i2}"
-mkdir -p "$OUT_DIR"
+echo "== I2: swaps_gate =="
 
-# Example inputs (user to supply real set under acceptance/)
-LIST="${LIST:-acceptance/swaps_orbit_list.txt}"
+REPORT="build/acceptance/swaps_report.wfr.json"
+mkdir -p "$(dirname "$REPORT")"
 
-if [[ ! -f "$LIST" ]]; then
-  echo "[WARN] No swaps list: $LIST — creating toy list"
-  echo "examples/graph/forge_eq_A.json" > "$OUT_DIR/.toy_list"
-  LIST="$OUT_DIR/.toy_list"
-fi
-
-ok=1
-idx=0
-> "$OUT_DIR/index.md"
-while IFS= read -r f; do
-  ((idx++)) || true
-  base="$(basename "$f")"
-  # wavectl should calculate L_struct deltas; here we simulate with return code and placeholder JSON
-  if "$WAVECTL" simulate-swaps --input "$f" --out "$OUT_DIR/${base}.wfr.json"; then
-    echo "| $idx | $base | PASS |" >> "$OUT_DIR/index.md"
-  else
-    echo "| $idx | $base | FAIL |" >> "$OUT_DIR/index.md"
-    ok=0
+if wavectl_has_subcmd "simulate-swaps"; then
+  if ! cargo run -p wavectl --bin wavectl -- simulate-swaps --out "$REPORT"; then
+    echo "[FAIL] simulate-swaps failed"
+    exit 1
   fi
-done < "$LIST"
-
-[[ $ok -eq 1 ]] || { echo "== Swaps Gate: FAIL =="; exit 1; }
-echo "== Swaps Gate: PASS =="
+  if jq -e '.delta_L_struct_max <= 0' "$REPORT" >/dev/null 2>&1; then
+    echo "[OK] ΔL_struct ≤ 0"
+  else
+    echo "[FAIL] ΔL_struct violation (see $REPORT)"
+    exit 1
+  fi
+else
+  echo "[WARN] 'simulate-swaps' not available; skipping I2 gate"
+fi

@@ -1,34 +1,20 @@
-# WaveML — STRICT-NF Canon (Phase P1/I1)
+# WaveML — Cleanup & Global Test Pack (Phase 4 Freeze) — v3
 
-This drop introduces a **stable API** in `waveforge`, a **strict stdout contract** in `wavectl forge`,
-support for **stdin/glob inputs**, a **Graph JSON Schema**, and **property-based tests**.
+**Дата:** 2025-10-18 14:53:12
 
-## Quickstart
-```bash
-# Build
-cargo build
-
-# Canonical NF-ID (hex only on stdout)
-target/debug/wavectl forge --input examples/graph/forge_eq_A.json --print-id
-
-# Canonical NF JSON
-target/debug/wavectl forge --input examples/graph/forge_eq_A.json --print-nf
-
-# Check if already canonical (exit 0 if yes)
-target/debug/wavectl forge --input examples/graph/forge_eq_A.json --check
-
-# Stdin / glob
-cat examples/graph/forge_eq_A.json | target/debug/wavectl forge -i - --print-id
-target/debug/wavectl forge -i "examples/graph/*.json" --print-id
-
-# Run CI gates for Phase P1/I1
-bash scripts/ci/run_all_gates.sh
+**Что нового (v3):**
+- Гейты не зависят от конкретных сабкоманд `wavectl`: выполняют **авто‑детекцию** возможностей CLI.
+- Детреминизм (I1) теперь через `nf-batch` (если доступно) — без `print-id`.
+- Acceptance (property‑gate) проверяет наличие `acceptance` сабкоманды; если её нет, **не падает**, а логирует WARN.
+- Swaps‑gate проверяет наличие `simulate-swaps`; если нет, WARN (не фейлит).
+- WT‑equiv поддерживает и `wt-equiv` бин, и `wavectl wt-equivalence`.
+- Перф‑гейт жёстко завязан на `nf-batch` (если нет — WARN/skip).
+- В пакет включены: `docs/graph.schema.json`, `acceptance/data/sample1.wml`.
+  
+Запуск:
 ```
-
-## Stable API
-```rust
-use waveforge::{canonicalize_graph, nf_id_hex};
+zsh scripts/cleanup/clean_repo.zsh --dry-run
+zsh scripts/cleanup/clean_repo.zsh
+zsh scripts/cleanup/collect_reports.zsh
+bash scripts/test/run_global_test.sh
 ```
-
-## Schema
-- `schemas/graph.schema.json` (schema_semver: 1.0.0)

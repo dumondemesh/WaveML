@@ -1,5 +1,30 @@
-/target
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.iml
 
-# artifacts
-*.zip
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Rust / Cargo
+target/
+**/*.rs.bk
+
+# Node / Misc
+node_modules/
+dist/
+
+# Build artifacts
 build/
+out/
+*.log
+*.tmp
+
+# Reports (keep only curated)
+**/*.wfr.json
+
+# Archives
+*.zip
