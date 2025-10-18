@@ -1,25 +1,32 @@
-# WaveML — контекст-капсула (Phase 4 Freeze)
+# WaveML — Документация (Phase 4 Freeze / Cleanup)
 
-- **Baseline:** I1–I3 стабильны; Perf/DX выполнены частично (логи/--jobs).
-- **Цель этого шага:** уборка → консолидация документации → зелёные гейты I1–I3 → RC-подготовка.
-- **Глобальный прогон:** `scripts/test/run_global_test.sh` (создаёт `build/reports/global_test_summary.md`).
+Этот каталог — **единственный источник истины (SSOT)** по архитектуре, инвариантам и процессам WaveML.
+Фокус текущего состояния — **Фаза 4 (Perf/DX)**: уборка, консолидация, стабильные гейты CI и понятная навигация.
 
-**Гейты:**
-- I1/forge: канонизация STRICT-NF, стабильный NF-ID (детерминизм).
-- I1/schema: валидация `graph.schema.json`.
-- I1–I2/property: генеративные эквиваленты/различия (seed-locked).
-- I2/swaps: ΔL_struct ≤ 0 по орбитам свопов.
-- I3/wt_equiv: WT-MSE ≤ порога (rustfft/COLA).
-- Perf: ускорение `nf-batch --jobs` и стабильный порядок вывода (не блокер релиза).
+## Быстрый старт
 
-**Куда пишет:**
-- NF-ID/NF → stdout.
-- Объяснения/логика → stderr/JSON logs.
-- Метрики (L_struct, WT-MSE/SDR) → `.wfr.json`.
-- Batch → `build/*.csv|json` (детерминированные).
+```bash
+# очистка артефактов
+zsh scripts/cleanup/clean_repo.zsh
 
-**Кнопки:**
-1) `scripts/cleanup/clean_repo.zsh --dry-run`
-2) `scripts/cleanup/collect_reports.zsh`
-3) `make all`
-4) `scripts/ci/run_all_gates.sh`
+# глобальная проверка (Ф4)
+bash scripts/test/run_global_test.sh
+```
+
+## Что ищете?
+
+- **Архитектура/структура** → [`STRUCTURE.md`](STRUCTURE.md)  
+- **Инварианты I1–I5, Правила R7/R8/R9…** → [`INVARIANTS.md`](INVARIANTS.md)  
+- **Гейты CI и пороги** → [`CI_GATES.md`](CI_GATES.md)  
+- **Дорожная карта/фазы/приоритеты** → [`ROADMAP.md`](ROADMAP.md)  
+- **Решения (ADR)** → каталог [`adr/`](adr/)  
+- **Форматы и схемы** → [`formats/`](formats/), [`spec/`](spec/), [`schemas/`](schemas/), корневая [`graph.schema.json`](graph.schema.json)  
+- **Шаблоны отчётов** → [`templates/`](templates/)  
+
+## TL;DR текущего статуса (Ф4)
+
+- **I1 (детерминизм)** — зелёный: гейт устойчив к недетермин. отчётам через канонизацию и сравнение `.metrics`.  
+- **I2/I3** — предупреждения: метрики `ΔL_struct`, `MSE/SDR` пока не экспортируются в отчёты CLI → гейты не фейлят, но сигнализируют.  
+- **Perf** — предупреждение: `nf-batch` отсутствует → пропуск.
+
+Подробности и переменные окружения см. в [`CI_GATES.md`](CI_GATES.md).

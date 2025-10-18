@@ -1,33 +1,27 @@
-# Repo Structure (post-clean)
+# STRUCTURE.md — Навигация по репозиторию
 
-```
-.
-├─ crates/                    # Rust workspace (waverunner, wavectl, wavelint, ...)
-├─ acceptance/                # Acceptance specs and plans
-│  ├─ tests.yaml              # План приёмки (reference/strict)
-│  └─ data/                   # Мини-набор входных файлов (коммитим)
-├─ docs/
-│  ├─ README.md               # 1-экран для старта (контекст-капсула)
-│  ├─ CHECKLIST_RC.md         # DoR/DoD, PR, матрица инвариантов
-│  ├─ STRUCTURE.md            # Эта страница
-│  ├─ CHANGELOG.md            # Коротко по релизам
-│  └─ adr/
-│     ├─ ADR-0002-WT-Norm-and-COLA.md
-│     └─ ADR-0003-stdout-and-schema.md
-├─ scripts/
-│  ├─ cleanup/
-│  │  ├─ clean_repo.zsh       # Удаление мусора по паттернам (+ --dry-run)
-│  │  └─ collect_reports.zsh  # Сбор *.wfr.json → build/reports/
-│  ├─ ci/
-│  │  ├─ run_all_gates.sh
-│  │  ├─ forge_gate.sh
-│  │  ├─ schema_gate.sh
-│  │  ├─ property_gate.sh
-│  │  ├─ swaps_gate.sh
-│  │  ├─ wt_equiv_gate.sh
-│  │  └─ perf_gate.sh
-│  └─ test/
-│     └─ run_global_test.sh   # Агрегатор полного прогона
-├─ Makefile                   # make all | fast | acceptance | clean | release
-└─ .github/workflows/ci.yml   # GitHub Actions (build + gates)
-```
+Основные директории:
+- `crates/` — ядро и утилитные крейты (`waveforge`, `wavectl`, `wavereport`, `waveform`, `wmlb`, `linters`, `wave_logging`).
+- `scripts/` — скрипты CI/cleanup/test. **Точки входа:**  
+  - `scripts/test/run_global_test.sh` — глобальный тест (Ф4).  
+  - `scripts/ci/*.sh` — гейты инвариантов.  
+  - `scripts/cleanup/*.zsh` — уборка артефактов.
+- `acceptance/` — входные файлы/план тестов (если используется `wavectl acceptance`).  
+- `docs/` — этот каталог.
+- `examples/` — примеры .wml/.wfm (опционально, вне критического пути).
+
+Внутри `docs/`:
+- `README.md` — быстрый старт и оглавление.
+- `INVARIANTS.md` — I1–I5, правила и метрики.
+- `CI_GATES.md` — спецификация гейтов, пороги, переменные окружения.
+- `ROADMAP.md` — фазы/приоритеты/борд задач.
+- `adr/` — принятые архитектурные решения (ADR-000x).
+- `formats/`, `schemas/`, `spec/`, `templates/` — форматы, схемы и шаблоны.
+- `graph.schema.json` — дублирующая корневая схема графа (канонический путь).
+
+## Матрица «что куда пишет»
+- **NF-ID/NF** → `stdout` (`--print-id`, `--print-nf`), строгий формат.
+- **Объяснения** → `forge-explain` + `stderr`/логи JSON.
+- **L_struct** → `forge-explain` + `.wfr`.
+- **Числовые метрики (WT-MSE/SDR)** → только `.wfr`.
+- **Batch-результаты** → CSV/JSON (детерминированные).

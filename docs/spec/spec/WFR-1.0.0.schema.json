@@ -1,104 +1,18 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Wave Report v1.x",
+  "$schema": "http://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/waveml/WFR-1.0.0.schema.json",
+  "title": "WaveML Report (.wfr.json)",
   "type": "object",
   "properties": {
-    "module": {
+    "version": {
       "type": "string"
     },
-    "mdl": {
-      "type": "object",
-      "properties": {
-        "l": {
-          "type": "number"
-        },
-        "l_struct": {
-          "type": "number"
-        },
-        "l_params": {
-          "type": "number"
-        },
-        "l_fit": {
-          "type": "number"
-        },
-        "l_coh": {
-          "type": "number"
-        }
-      },
-      "additionalProperties": true
-    },
-    "w_params": {
-      "type": "object",
-      "properties": {
-        "n_fft": {
-          "type": "integer"
-        },
-        "hop": {
-          "type": "integer"
-        },
-        "window": {
-          "type": "string"
-        },
-        "mode": {
-          "type": "string"
-        },
-        "center": {
-          "type": "boolean"
-        },
-        "pad_mode": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "n_fft",
-        "hop",
-        "window",
-        "mode"
-      ],
-      "additionalProperties": true
-    },
-    "w_perf": {
-      "type": "object",
-      "properties": {
-        "backend": {
-          "type": "string"
-        },
-        "backend_version": {
-          "type": "string"
-        },
-        "wall_ms": {
-          "type": "number"
-        },
-        "frames": {
-          "type": "integer"
-        },
-        "threads": {
-          "type": "integer"
-        }
-      },
-      "additionalProperties": true
-    },
     "metrics": {
-      "type": "object",
-      "properties": {
-        "cola_rel_dev": {
-          "type": "number"
-        },
-        "cola_mean": {
-          "type": "number"
-        },
-        "cola_tol": {
-          "type": "number"
-        },
-        "cola_pass": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": true
+      "type": "object"
+    },
+    "artifacts": {
+      "type": "object"
     }
   },
-  "required": [
-    "mdl"
-  ],
   "additionalProperties": true
 }

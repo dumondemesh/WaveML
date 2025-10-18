@@ -1,93 +1,15 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://wave.ml/schemas/WMLB.schema.json",
-  "title": "WMLB IR (v1.1)",
+  "$schema": "http://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/waveml/formats/WMLB.schema.json",
+  "title": "WMLB schema (formats)",
   "type": "object",
   "properties": {
-    "abi_version": {
-      "type": "string",
-      "const": "1.1"
+    "magic": {
+      "type": "string"
     },
-    "graph": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": [
-          "op",
-          "id"
-        ],
-        "properties": {
-          "op": {
-            "type": "string",
-            "enum": [
-              "W",
-              "T",
-              "T_inv",
-              "D",
-              "A",
-              "C",
-              "Align"
-            ]
-          },
-          "id": {
-            "type": "string"
-          },
-          "input": {
-            "type": "string"
-          },
-          "params": {
-            "type": "object",
-            "properties": {
-              "bank": {
-                "type": "string"
-              },
-              "n_fft": {
-                "type": "integer",
-                "minimum": 128
-              },
-              "hop": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "window": {
-                "type": "string",
-                "enum": [
-                  "hann",
-                  "hamming",
-                  "blackman"
-                ]
-              },
-              "center": {
-                "type": "boolean"
-              },
-              "pad_mode": {
-                "type": "string",
-                "enum": [
-                  "reflect"
-                ]
-              },
-              "mode": {
-                "type": "string",
-                "enum": [
-                  "xcorr_soft",
-                  "xcorr_hard"
-                ]
-              },
-              "radius": {
-                "type": "integer",
-                "minimum": 0
-              }
-            },
-            "additionalProperties": true
-          }
-        },
-        "additionalProperties": true
-      }
+    "version": {
+      "type": "string"
     }
   },
-  "required": [
-    "abi_version",
-    "graph"
-  ],
   "additionalProperties": true
 }
