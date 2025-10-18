@@ -28,7 +28,7 @@ cd "$SCRIPT_DIR"
 
 # Имя архива с датой/временем (без двоеточий)
 ts="$(date +"%Y-%m-%d_%H-%M-%S")"
-OUT="WaveML_${ts}.zip"
+OUT="../WaveML_${ts}.zip"
 
 # Что архивировать: аргументы -> иначе INCLUDE
 typeset -a SELECTED TO_ZIP
