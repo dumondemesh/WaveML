@@ -1,0 +1,36 @@
+{
+  "header": {
+    "schema_semver": "1.0.0"
+  },
+  "meta": {
+    "generated_at": null,
+    "tool": "wavectl"
+  },
+  "W": {
+    "params": {
+      "n_fft": null,
+      "hop": null,
+      "window": null,
+      "center": null,
+      "pad_mode": null
+    },
+    "perf": {
+      "backend": "rustfft",
+      "rustfft_ver": null,
+      "frames": null,
+      "wall_ms": null,
+      "threads": null
+    }
+  },
+  "metrics": {
+    "mse": null,
+    "rel_mse": null,
+    "sdr_db": null,
+    "cola_max_dev": null
+  },
+  "cert": {
+    "I1": null,
+    "I2": null,
+    "I3": null
+  }
+}

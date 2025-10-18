@@ -1,0 +1,2 @@
+examples/graph/forge_eq_A.json
+examples/graph/forge_eq_B.json

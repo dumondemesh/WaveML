@@ -1,2 +1,0 @@
-input x: WaveForm(domain="audio")
-x = D(λ=2)(x)     // нет aa=

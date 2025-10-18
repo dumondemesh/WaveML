@@ -21,7 +21,7 @@ pub fn run(input: &Path, out: &Path) -> Result<()> {
             backend_version: "0.0.1".into(),
             wall_ms: 0.0,
             frames: 0,
-            threads: 0,
+            threads: Some(0),
         }),
         ..Default::default()
     };

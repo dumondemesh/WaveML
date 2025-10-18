@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "== WaveML CI gates =="
+step() { echo "[$1] $2"; }
+
+mkdir -p examples/graph examples/batch build/perf
+[[ -f examples/graph/forge_eq_A.json ]] || echo '{"graph":{"nodes":[{"id":"w1","op":"W","params":{"n_fft":1024,"hop":512,"window":"Hann","center":false,"pad_mode":"reflect"}}],"edges":[]}}' > examples/graph/forge_eq_A.json
+[[ -f examples/graph/forge_eq_B.json ]] || echo '{"graph":{"nodes":[{"id":"wA","op":"W","params":{"n_fft":1024,"hop":512,"window":"hann","center":false,"pad_mode":"reflect"}}],"edges":[]}}' > examples/graph/forge_eq_B.json
+[[ -f examples/batch/list.txt ]] || printf "examples/graph/forge_eq_A.json\nexamples/graph/forge_eq_B.json\n" > examples/batch/list.txt
+
+step "1/6" "build"; cargo build >/dev/null
+step "2/6" "clippy strict"; echo "==> Strict clippy gate"; cargo clippy --workspace --all-targets -- -D warnings >/dev/null && echo "CLIPPY-GATE: OK"
+
+step "3/6" "forge canonicalization"
+W=target/debug/wavectl
+A=examples/graph/forge_eq_A.json
+B=examples/graph/forge_eq_B.json
+nfid() { "$W" forge --input "$1" --print-id | head -n1 | tr -d '\r'; }
+IDA=$(nfid "$A"); echo "[forge-gate] NF-ID(A)   = NF-ID=$IDA"
+IDB=$(nfid "$B"); echo "[forge-gate] NF-ID(B)   = NF-ID=$IDB"
+if [[ "$IDA" != "$IDB" ]]; then
+  echo "[forge-gate] FAIL: A and B must be identical after canon"
+  "$W" nf-diff --left "$A" --right "$B" --show-source-diff || true
+  exit 1
+fi
+echo "== Forge Gate: PASS =="
+
+[[ -x scripts/ci/swaps_gate.sh ]] && { step "4/6" "swaps gate"; bash scripts/ci/swaps_gate.sh; }
+[[ -x scripts/ci/wt_equiv_gate.sh ]] && { step "5/6" "wt-equivalence gate"; bash scripts/ci/wt_equiv_gate.sh; }
+
+if [[ -x scripts/ci/perf_gate.sh ]]; then
+  step "6/6" "perf/dx gate (advisory)"; bash scripts/ci/perf_gate.sh || echo "[perf] advisory gate warning"
+fi
+
+echo "[CI] OK"

@@ -1,5 +1,9 @@
-# Placeholder thresholds for future metrics gating
-cola_max_dev: 1.0e-12
-mse_max: 0.0
-rel_mse_max: 0.0
-snr_db_min: 100.0
+# Thresholds for acceptance gates
+i2:
+  delta_l_struct_max: 0.0
+  # add other structural tolerances as needed
+
+i3:
+  wt_mse_max: 1e-9
+  sdr_db_min: 60.0
+  cola_max_dev: 1e-12

@@ -13,6 +13,7 @@ INCLUDE=(
   "acceptance"
   "scripts"
   "docs"
+  "templates"
   "spec"
   "tools"
   "schemas"

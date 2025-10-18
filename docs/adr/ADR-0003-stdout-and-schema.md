@@ -1,15 +1,16 @@
-# ADR-0003: Stdout contract & Input schema (Phase P1/I1)
+# ADR-0003 — Stdout-контракт и Schema как единый интерфейс (F1/P1)
 
-**Status:** Accepted  
-**Context:** `wavectl forge` is used in scripts/pipes; non-deterministic or verbose stdout breaks automation.
-We also need stable input validation to guarantee canonicalization correctness.
+**Контекст.** Канонизация (I1) должна быть воспроизводимой и машинно проверяемой. 
+Источники несовместимостей: «болтливый stdout», дрейф формата графа/отчёта, различие версий инструментов.
 
-**Decision:**
-- `--print-id` prints **only hex NF-ID on stdout**. Human banners go to stderr or require `--with-banner`.
-- Support `--input -` for stdin and glob patterns for batch runs.
-- Provide `schemas/graph.schema.json` (schema_semver) and a `--schema` flag for validation (full validator can be added).
+**Решение.**
+1) **Stdout-контракт**: `wavectl forge --print-id` выводит **ровно** одну строку из 64 hex-символов — и ничего больше.
+   Любые пояснения/объяснения уходят в `forge-explain` или stderr/лог JSON.
+2) **Schema-валидация**: все входные графы соответствуют `spec/WMLB-1.1.schema.json`, а все отчёты — `spec/WFR-1.0.0.schema.json`.
+   В CI запускается `schema_gate.sh`, падение при несоответствии.
+3) **Единая точка правды**: статусы фаз/инвариантов публикуются **только** на основе валидных `.wfr` из CI.
 
-**Consequences:**
-- Deterministic machine-readable output by default.
-- Lower friction in CI and batch tooling.
-- A formal contract for input structure (extensible per schema_semver).
+**Последствия.**
+- I1 получает строгую механическую проверку (детерминизм ID и валидность форматов).
+- Логи становятся пригодными для машинной агрегации.
+- Разработчикам: меньше «случайного» красного CI, потому что формат стабилен.

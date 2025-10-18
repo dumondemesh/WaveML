@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WFR v1 Schema (compatible)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "created_at",
+    "run_id",
+    "cert",
+    "w_params",
+    "w_perf",
+    "metrics"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "cert": {
+      "type": "object"
+    },
+    "mdl": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "phase": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "swap": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "w_params": {
+      "type": "object"
+    },
+    "w_perf": {
+      "type": "object",
+      "properties": {
+        "backend": {
+          "type": "string"
+        },
+        "backend_version": {
+          "type": "string"
+        },
+        "wall_ms": {
+          "type": "number"
+        },
+        "frames": {
+          "type": "integer"
+        },
+        "threads": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "backend",
+        "backend_version",
+        "wall_ms",
+        "frames",
+        "threads"
+      ]
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "log": {
+      "type": [
+        "array",
+        "null"
+      ]
+    }
+  }
+}

@@ -1,0 +1,10 @@
+schema: 1
+tests:
+  - id: i3_sine
+    signal: sine
+    mse_max: 1.0e-9
+    sdr_min: 60.0
+  - id: i3_sweep
+    signal: sweep
+    mse_max: 1.0e-9
+    sdr_min: 60.0

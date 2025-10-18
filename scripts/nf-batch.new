@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+PY="${PYTHON:-python3}"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec "$PY" "$DIR/nf_batch/nf_batch.py" "$@"
