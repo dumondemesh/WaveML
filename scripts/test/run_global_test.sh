@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "== WaveML Global Test (Phase 4 Freeze) — v3 =="
+echo "== WaveML Global Test (Phase 4 Freeze) — v4 =="
 mkdir -p build/reports
 
 echo "-- Build & Clippy"
@@ -9,7 +9,7 @@ cargo build --workspace
 cargo clippy --workspace --all-targets -- -D warnings
 
 echo "-- Acceptance (non-blocking, if available)"
-if wavectl --help 2>/dev/null | grep -E "^[[:space:]]+acceptance([[:space:]]|$)" >/dev/null 2>&1; then
+if cargo run -q -p wavectl --bin wavectl -- --help 2>/dev/null | grep -E "^[[:space:]]+acceptance([[:space:]]|$)" >/dev/null 2>&1; then
   cargo run -p wavectl --bin wavectl -- acceptance --plan acceptance/tests.yaml --outdir build/acceptance --strict || true
 else
   echo "[WARN] wavectl acceptance not available; skipping"

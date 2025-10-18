@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# --- CLI detection helpers ---
-has_wavectl() { command -v wavectl >/dev/null 2>&1; }
-has_wt_equiv_bin() { command -v wt-equiv >/dev/null 2>&1; }
-wavectl_has_subcmd() { has_wavectl && wavectl --help 2>/dev/null | grep -E "^[[:space:]]+$1([[:space:]]|$)" >/dev/null 2>&1; }
 
+# ---- Cargo-based CLI detection helpers ----
+wavectl_help() { cargo run -q -p wavectl --bin wavectl -- --help 2>/dev/null; }
+wavectl_has_subcmd() { wavectl_help | grep -E "^[[:space:]]+$1([[:space:]]|$)" >/dev/null 2>&1; }
+cargo_run_wavectl() { cargo run -p wavectl --bin wavectl -- "$@"; }
 
 echo "== Perf: perf_gate =="
 
@@ -24,8 +24,8 @@ if [[ ! -s "$LIST" ]]; then
   exit 0
 fi
 
-time cargo run -p wavectl --bin wavectl -- nf-batch --list "$LIST" --jobs 1 --out "$OUT1"
-time cargo run -p wavectl --bin wavectl -- nf-batch --list "$LIST" --jobs 8 --out "$OUTN"
+time cargo_run_wavectl nf-batch --list "$LIST" --jobs 1 --out "$OUT1"
+time cargo_run_wavectl nf-batch --list "$LIST" --jobs 8 --out "$OUTN"
 
 if ! diff -u "$OUT1" "$OUTN" >/dev/null; then
   echo "[WARN] Output order differs between 1 and N jobs (not a blocker)."

@@ -1,30 +1,26 @@
-# OS / IDE
-.DS_Store
-.idea/
-.vscode/
-*.iml
-
-# Python
-__pycache__/
-*.pyc
-.pytest_cache/
-
-# Rust / Cargo
-target/
-**/*.rs.bk
-
-# Node / Misc
-node_modules/
-dist/
-
-# Build artifacts
-build/
-out/
+# Artifacts & caches
+/target/
+/build/
+/build_*/
+/out/
+/release/
+/dist/
+/node_modules/
+**/__pycache__/
+**/.pytest_cache/
+**/.mypy_cache/
 *.log
 *.tmp
+*.cache
+*.pyc
+*.pyo
+.DS_Store
 
-# Reports (keep only curated)
-**/*.wfr.json
-
-# Archives
+# Reports & archives
+*.wfr.json
 *.zip
+*.7z
+*.tar
+*.tar.gz
+*.tar.bz2
+*.tar.xz
