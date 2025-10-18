@@ -1,0 +1,6 @@
+wt:
+  mse_max: 1.0e-9
+  sdr_min: 60.0
+  cola_max_dev: 1.0e-6
+  require_sdr: false
+  require_cola: false

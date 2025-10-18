@@ -1,0 +1,8 @@
+[package]
+name = "wave_logging"
+version = "0.0.1"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "wave_logging stub (RC1g)"
+[lib]
+path = "src/lib.rs"

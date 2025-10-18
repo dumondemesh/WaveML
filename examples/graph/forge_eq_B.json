@@ -1,0 +1,1 @@
+{"graph":{"nodes":[{"id":"wA","op":"W","params":{"n_fft":1024,"hop":512,"window":"hann","center":false,"pad_mode":"reflect"}}],"edges":[]}}

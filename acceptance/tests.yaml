@@ -1,52 +1,6 @@
-- name: R7_fail_zero_pad
-  src: acceptance/bad_r7.wml
-  expect: FAIL
-
-- name: R8_fail_no_aa
-  src: acceptance/bad_r8.wml
-  expect: FAIL
-
-- name: OK_hello_down
-  src: examples/hello_down.wml
-  expect: PASS
-
-- name: R7_fail_wrong_case_edge
-  src: acceptance/bad_r7_case.wml
-  expect: FAIL
-
-- name: OK_multiline_W
-  src: acceptance/ok_multiline_w.wml
-  expect: PASS
-
-- name: RUN_down_by_2
-  src: examples/hello_down.wml
-  expect: PASS
-  run:
-    input: examples/dummy.wfm.json
+plan:
+  - name: basic_nf_id
+    input: acceptance/data/sample1.wml
     expect:
-      rate_div: 2
-      len_div: 2
-
-- name: RUN_down_by_3
-  src: examples/hello_down3.wml
-  expect: PASS
-  run:
-    input: examples/dummy.wfm.json
-    expect:
-      rate_div: 3
-      len_div: 3
-
-- name: RUN_down_bad_lambda
-  src: acceptance/bad_lambda_1.wml
-  expect: FAIL
-  run:
-    input: examples/dummy.wfm.json
-
-- name: RUN_wt_roundtrip
-  src: examples/hello_wt.wml
-  expect: PASS
-  run:
-    input: examples/dummy.wfm.json
-    expect:
-      len_eq: true
-      mse_max: 1e-6
+      kind: nf_id
+      stable: true

@@ -1,5 +1,26 @@
-/target
+# Artifacts & caches
+/target/
+/build/
+/build_*/
+/out/
+/release/
+/dist/
+/node_modules/
+**/__pycache__/
+**/.pytest_cache/
+**/.mypy_cache/
+*.log
+*.tmp
+*.cache
+*.pyc
+*.pyo
+.DS_Store
 
-# artifacts
+# Reports & archives
+*.wfr.json
 *.zip
-build/
+*.7z
+*.tar
+*.tar.gz
+*.tar.bz2
+*.tar.xz

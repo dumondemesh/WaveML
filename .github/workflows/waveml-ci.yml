@@ -1,0 +1,70 @@
+name: WaveML CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo build
+        uses: Swatinem/rust-cache@v2
+
+      - name: Ensure Python present
+        run: |
+          python3 --version
+          pip3 --version || true
+
+      - name: (Optional) fix serde_yaml deprecated tag in wavectl
+        run: |
+          bash ci/fix_serde_yaml_dep.sh || true
+
+      - name: Build
+        run: cargo build --verbose
+
+      - name: Run acceptance (migrate+metrics+validate, forge gate, I2/I3, overview)
+        run: |
+          bash ci/run_acceptance_all.sh build build_migrated build_i23
+
+      - name: Extra schema gate (strict)
+        run: |
+          python3 ci/wfr_schema_gate.py build_migrated
+
+      - name: Publish HTML overview
+        run: |
+          python3 tools/overview_to_html.py --base build_migrated --out build_migrated/overview.html
+          bash ci/overview_gate.sh build_migrated
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave-acceptance-artifacts
+          path: |
+            build_migrated/overview.md
+            build_migrated/overview.html
+            build_migrated/**/*.wfr.json
+            build_i23/**/*.wfr.json
+
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        run: cargo build
+      - name: Strict clippy
+        run: bash ci/strict_clippy_gate.sh
+      - name: Forge Gate
+        run: bash ci/forge_gate.sh
+      - name: NF-DIFF Gate
+        run: bash scripts/ci/nf_diff_gate.sh
+      - name: COLA -> WFR
+        run: bash ci/overview_gate.sh
+      - name: Validate WFR
+        run: bash ci/run_wfr_migration_and_check.sh

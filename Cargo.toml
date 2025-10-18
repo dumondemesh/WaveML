@@ -1,28 +1,10 @@
 [workspace]
-members = [
-    "crates/wmlb",
-    "crates/waveform",
-    "crates/wavelint",
-    "crates/waveforge",
-    "crates/waverunner",
-    "crates/wavereport",
-    "crates/wavectl",
-]
 resolver = "2"
-
-[workspace.package]
-edition = "2021"
-version = "0.1.0"
-authors = ["WaveML Team"]
-license = "Apache-2.0"
-
-[workspace.dependencies]
-anyhow = "1"
-thiserror = "1"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-clap = { version = "4", features = ["derive"] }
-log = "0.4"
-env_logger = "0.11"
-time = { version = "0.3", features = ["formatting", "macros"] }
-serde_yaml = "0.9"
+members = [
+  "crates/linters",
+  "crates/wave_logging",
+  "crates/wavectl",
+  "crates/waveform",
+  "crates/wavereport",
+  "crates/wmlb",
+]

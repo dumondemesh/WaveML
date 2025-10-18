@@ -4,15 +4,22 @@ set -euo pipefail
 # === УКАЖИ СВОИ ФАЙЛЫ/ПАПКИ ТУТ (относительно директории скрипта) ===
 # Если при запуске переданы аргументы — они ПЕРЕПИШУТ этот список.
 INCLUDE=(
-  "src"
-  "build"
-  "crates"
-  "examples"
-  "acceptance"
-  ".github"
-  "Cargo.toml"
-  "rust-toolchain.toml"
-  "README.md"
+"acceptance"
+"crates"
+"Makefile"
+"build"
+"docs"
+"modules"
+"tests"
+"examples"
+"README.md"       
+"tools"
+"Cargo.toml"
+"fix"
+"rust-toolchain.toml"
+"ci"          
+"make_waveml_zip.zsh" 
+"scripts"
 )
 
 # Папка, где лежит скрипт

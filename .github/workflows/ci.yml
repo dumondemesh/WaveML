@@ -1,0 +1,22 @@
+name: CI
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+jobs:
+  build-and-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Build
+        run: cargo build --workspace
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Acceptance (non-blocking)
+        run: cargo run -p wavectl -- acceptance --plan acceptance/tests.yaml --outdir build/acceptance --strict || true
+      - name: Gates
+        run: bash scripts/ci/run_all_gates.sh

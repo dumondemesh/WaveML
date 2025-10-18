@@ -1,11 +1,8 @@
 [package]
 name = "wavereport"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2021"
-
-[dependencies]
-anyhow = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-time = { workspace = true }
-wmlb = { path = "../wmlb" }
+license = "MIT OR Apache-2.0"
+description = "wavereport stub (RC1g)"
+[lib]
+path = "src/lib.rs"

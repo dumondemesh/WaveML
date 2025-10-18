@@ -1,19 +1,14 @@
 [package]
 name = "wavectl"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "wavectl stub (RC1g) — simulate-swaps, wt-equiv bins"
 
-[dependencies]
-anyhow = { workspace = true }
-clap = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-serde_yaml = { workspace = true }
-wmlb = { path = "../wmlb" }
-waveform = { path = "../waveform" }
-waveforge = { path = "../waveforge" }
-waverunner = { path = "../waverunner" }
-wavereport = { path = "../wavereport" }
-env_logger = { workspace = true }
-log = { workspace = true }
-time = { workspace = true }
+[[bin]]
+name = "wavectl"
+path = "src/bin/wavectl.rs"
+
+[[bin]]
+name = "wt-equiv"
+path = "src/bin/wt-equiv.rs"

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WaveML Graph (legacy+NF)",
+  "type": "object",
+  "oneOf": [
+    {
+      "properties": {
+        "graph": {
+          "type": "object",
+          "properties": {
+            "nodes": {
+              "type": "array"
+            },
+            "edges": {
+              "type": "array"
+            }
+          },
+          "required": [
+            "nodes"
+          ]
+        }
+      },
+      "required": [
+        "graph"
+      ]
+    },
+    {
+      "properties": {
+        "nodes": {
+          "type": "array"
+        },
+        "edges": {
+          "type": "array"
+        }
+      },
+      "required": [
+        "nodes"
+      ]
+    }
+  ]
+}

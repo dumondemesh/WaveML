@@ -1,3 +1,0 @@
-input x: WaveForm(domain="audio")
-x = W(bank="stft", edge="reflect")(x)
-y = T()(x)

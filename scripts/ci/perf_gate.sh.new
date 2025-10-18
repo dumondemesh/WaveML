@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+LIST="examples/batch/list.txt"
+OUT1="build/perf/nf_serial.json"
+OUTP="build/perf/nf_parallel.json"
+mkdir -p build/perf examples/batch
+[[ -f "$LIST" ]] || printf "examples/graph/forge_eq_A.json\nexamples/graph/forge_eq_B.json\n" > "$LIST"
+echo "[perf] serial run (--jobs 1)"; scripts/nf-batch --list "$LIST" --format json --out "$OUT1" --jobs 1
+echo "[perf] parallel run (--jobs 8)"; scripts/nf-batch --list "$LIST" --format json --out "$OUTP" --jobs 8
+python3 - <<'PY'
+import json
+a=json.load(open("build/perf/nf_serial.json"))
+b=json.load(open("build/perf/nf_parallel.json"))
+ain=[r["input"] for r in a]; bin=[r["input"] for r in b]
+assert ain==bin, "order differs"
+print("[perf] order OK")
+PY
+echo "[perf] gate: PASS (advisory)"

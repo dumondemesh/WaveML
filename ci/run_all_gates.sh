@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "== WaveML CI gates =="
+
+step() { echo "[$1] $2"; }
+
+# [1/6] build
+step "1/6" "build"
+cargo build >/dev/null
+
+# [2/6] clippy strict
+step "2/6" "clippy strict"
+echo "==> Strict clippy gate"
+cargo clippy --workspace --all-targets -- -D warnings >/dev/null && echo "CLIPPY-GATE: OK"
+
+# [3/6] forge canonicalization (INLINE, no SYN)
+step "3/6" "forge canonicalization"
+W=target/debug/wavectl
+A=examples/graph/forge_eq_A.json
+B=examples/graph/forge_eq_B.json
+
+nfid() {
+  "$W" forge --input "$1" --print-id | head -n1 | tr -d '\r'
+}
+
+IDA=$(nfid "$A"); echo "[forge-gate] NF-ID(A)   = NF-ID=$IDA"
+IDB=$(nfid "$B"); echo "[forge-gate] NF-ID(B)   = NF-ID=$IDB"
+if [[ "$IDA" != "$IDB" ]]; then
+  echo "[forge-gate] FAIL: A and B must be identical after canon"
+  "$W" nf-diff --left "$A" --right "$B" --show-source-diff || true
+  exit 1
+fi
+echo "== Forge Gate: PASS =="
+
+# [4/6] NF-DIFF gate (baseline)
+step "4/6" "nf-diff gate"
+CF=examples/graph/forge_diff_center_false.json
+CT=examples/graph/forge_diff_center_true.json
+PR=examples/graph/forge_diff_pad_reflect.json
+PT=examples/graph/forge_diff_pad_toeplitz.json
+set +e
+"$W" nf-diff --left "$CF" --right "$CT" --fail-on-diff >/dev/null 2>&1; diff1=$?
+"$W" nf-diff --left "$PR" --right "$PT" --fail-on-diff >/dev/null 2>&1; diff2=$?
+set -e
+[[ $diff1 -ne 0 && $diff2 -ne 0 ]] || { echo "NF-DIFF Gate failed"; exit 1; }
+echo "== NF-DIFF Gate: PASS =="
+
+# [5/6] swaps gate (I2)
+step "5/6" "swaps gate (I2)"
+bash scripts/ci/swaps_gate.sh
+
+# [6/6] wt-equivalence gate (I3)
+step "6/6" "wt-equivalence gate (I3)"
+bash scripts/ci/wt_equiv_gate.sh
+
+# [7/7] perf/dx (advisory)
+if [[ -x scripts/ci/perf_gate.sh ]]; then
+  echo "[7/7] perf/dx gate (advisory)"
+  bash scripts/ci/perf_gate.sh || echo "[perf] advisory gate warning"
+fi
+
+echo "[CI] OK"
+
